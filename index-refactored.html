@@ -1,0 +1,3776 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forge of Decks - MTG Deck Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Montserrat:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ===== GLOBAL STYLES ===== */
+        :root {
+            --forge-red: #ff4b2b;
+            --forge-orange: #ff9d2f;
+            --forge-yellow: #ffcd38;
+            --forge-dark: #1a1a1a;
+            --forge-darker: #0a0a0a;
+            --forge-light: #f5f5f5;
+            --forge-accent: #7a3b2e;
+            --card-width: 240px;
+            --card-height: 336px;
+            /* Standard MTG card ratio 63:88 */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--forge-darker);
+            color: var(--forge-light);
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: url('https://images.unsplash.com/photo-1555505019-8c3f1c4aba5f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-blend-mode: overlay;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 26, 0.8) 100%);
+            z-index: -1;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ===== HEADER STYLES ===== */
+        header {
+            padding: 20px 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+        }
+
+        .logo h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, var(--forge-red), var(--forge-orange), var(--forge-yellow));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: var(--forge-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(to right, var(--forge-red), var(--forge-orange));
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--forge-orange);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255, 75, 43, 0.2) 0%, rgba(10, 10, 10, 0) 70%);
+            z-index: -1;
+            animation: pulse 4s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.5;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+        }
+
+        .hero h2 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        /* ===== FORGE CENTERPIECE ===== */
+        .forge-centerpiece {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            margin: 50px 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .forge {
+            position: relative;
+            width: 400px;
+            height: 250px;
+            background: url('https://images.unsplash.com/photo-1554224155-1696413565d3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .forge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg,
+                    rgba(255, 75, 43, 0.7) 0%,
+                    rgba(255, 157, 47, 0.5) 50%,
+                    rgba(255, 205, 56, 0.3) 100%);
+            z-index: 1;
+        }
+
+        .forge::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80%;
+            height: 40%;
+            background: radial-gradient(ellipse at center, rgba(255, 205, 56, 0.8) 0%, rgba(255, 75, 43, 0) 70%);
+            transform: translate(-50%, -30%);
+            filter: blur(20px);
+            z-index: 2;
+            animation: flicker 3s infinite alternate;
+        }
+
+        @keyframes flicker {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            25% {
+                opacity: 0.8;
+            }
+
+            50% {
+                opacity: 0.9;
+            }
+
+            75% {
+                opacity: 0.7;
+            }
+        }
+
+        .forge-sparks {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .spark {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background-color: var(--forge-yellow);
+            border-radius: 50%;
+            opacity: 0;
+            animation: spark-fly 2s ease-out infinite;
+        }
+
+        @keyframes spark-fly {
+            0% {
+                transform: translateY(100px) translateX(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100px) translateX(var(--x-offset));
+                opacity: 0;
+            }
+        }
+
+        .forge-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+            text-align: center;
+            width: 100%;
+        }
+
+        .forge-title h3 {
+            font-size: 2.5rem;
+            color: var(--forge-light);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+            margin-bottom: 15px;
+        }
+
+        /* ===== FORMAT SELECTION ===== */
+        .format-selection {
+            text-align: center;
+            margin: 50px 0;
+        }
+
+        .format-selection h3 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: var(--forge-light);
+        }
+
+        .format-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .format-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, var(--forge-dark), var(--forge-darker));
+            border: 1px solid var(--forge-accent);
+            border-radius: 5px;
+            color: var(--forge-light);
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .format-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .format-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(122, 59, 46, 0.4);
+        }
+
+        .format-btn:hover::before {
+            left: 100%;
+        }
+
+        .format-btn.active {
+            background: linear-gradient(135deg, var(--forge-red), var(--forge-accent));
+            box-shadow: 0 5px 15px rgba(122, 59, 46, 0.6);
+        }
+
+        /* ===== CARD DISPLAY ===== */
+        .card-display {
+            margin: 50px 0;
+            perspective: 1000px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(2, auto);
+            gap: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .card-grid.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 140%;
+            /* Maintain card aspect ratio */
+            perspective: 1000px;
+        }
+
+        .card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 4.5% / 3.5%;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            cursor: pointer;
+            background-color: var(--forge-dark);
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) rotateX(5deg) rotateY(-5deg);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.1) 50%,
+                    rgba(255, 255, 255, 0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+            animation: card-shine 1.5s ease-in-out;
+        }
+
+        @keyframes card-shine {
+            0% {
+                transform: translateY(100%) translateX(-100%);
+            }
+
+            100% {
+                transform: translateY(-100%) translateX(100%);
+            }
+        }
+
+        .card-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4.5% / 3.5%;
+        }
+
+        .card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+            color: var(--forge-light);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 3;
+        }
+
+        .card:hover .card-overlay {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-type {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .card-btn {
+            padding: 5px 10px;
+            background: rgba(255, 75, 43, 0.7);
+            border: none;
+            border-radius: 3px;
+            color: white;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .card-btn:hover {
+            background: rgba(255, 75, 43, 1);
+        }
+
+        .card.selected {
+            box-shadow: 0 0 0 3px var(--forge-yellow), 0 10px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 25px;
+            height: 25px;
+            background: var(--forge-yellow);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--forge-dark);
+            font-weight: bold;
+            z-index: 4;
+        }
+
+        /* ===== DECK BUILDER SECTION ===== */
+        .deck-builder {
+            margin: 50px 0;
+            padding: 30px;
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .deck-builder h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--forge-light);
+            text-align: center;
+        }
+
+        .deck-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .deck-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--forge-orange);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .deck-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .deck-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--forge-red), var(--forge-accent));
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .deck-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(122, 59, 46, 0.4);
+        }
+
+        .deck-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .deck-card {
+            background: rgba(10, 10, 10, 0.6);
+            border-radius: 5px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .deck-card:hover {
+            background: rgba(10, 10, 10, 0.8);
+            transform: translateY(-3px);
+        }
+
+        .deck-card-img {
+            width: 40px;
+            height: 56px;
+            border-radius: 3px;
+            object-fit: cover;
+        }
+
+        .deck-card-info {
+            flex: 1;
+        }
+
+        .deck-card-name {
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+
+        .deck-card-type {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .remove-card {
+            background: none;
+            border: none;
+            color: var(--forge-red);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .remove-card:hover {
+            color: var(--forge-orange);
+        }
+
+        /* ===== SYNERGY INFO STYLES ===== */
+        .synergy-info {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(10, 10, 10, 0.6);
+            border-radius: 10px;
+        }
+
+        .synergy-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .synergy-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(26, 26, 26, 0.8);
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .synergy-item:hover {
+            background: rgba(26, 26, 26, 1);
+            transform: translateY(-2px);
+        }
+
+        .synergy-card {
+            font-weight: 500;
+        }
+
+        .synergy-score {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 4px;
+        }
+
+        .score {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--forge-orange);
+        }
+
+        .combo-type {
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            background: var(--forge-red);
+            color: white;
+            font-size: 0.7em;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-transform: capitalize;
+        }
+
+        .view-all-btn {
+            background: var(--forge-dark);
+            color: var(--forge-light);
+            border: 1px solid var(--forge-accent);
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-all-btn:hover {
+            background: var(--forge-accent);
+        }
+
+        .synergy-pairs {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+
+        .synergy-pairs li {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(122, 59, 46, 0.3);
+        }
+
+        .pair-score {
+            font-weight: 700;
+            color: var(--forge-orange);
+        }
+
+        .suggestions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .suggestion-item {
+            background: rgba(26, 26, 26, 0.8);
+            padding: 12px;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .suggestion-name {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .suggestion-type {
+            font-size: 0.8em;
+            opacity: 0.7;
+            margin-bottom: 8px;
+        }
+
+        .suggestion-synergy {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .add-suggestion {
+            background: var(--forge-red);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-suggestion:hover {
+            background: var(--forge-orange);
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--forge-darker);
+            padding: 40px 0;
+            margin-top: 50px;
+            border-top: 1px solid rgba(122, 59, 46, 0.3);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-logo img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .footer-logo h4 {
+            font-size: 1.5rem;
+            background: linear-gradient(to right, var(--forge-red), var(--forge-orange));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: var(--forge-light);
+            text-decoration: none;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 30px;
+            opacity: 0.5;
+            font-size: 0.8rem;
+        }
+
+        /* ===== LOADING ANIMATION ===== */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--forge-darker);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-forge {
+            width: 100px;
+            height: 100px;
+            position: relative;
+        }
+
+        .loading-forge::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 60px;
+            height: 60px;
+            margin-top: -30px;
+            margin-left: -30px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--forge-red);
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-forge::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            margin-top: -20px;
+            margin-left: -20px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--forge-orange);
+            animation: spin 0.8s linear infinite reverse;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ===== NOTIFICATION STYLES ===== */
+        .notification-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .notification {
+            padding: 12px 20px;
+            border-radius: 4px;
+            color: white;
+            min-width: 300px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            animation: slide-in 0.3s ease;
+        }
+
+        .notification.success {
+            background: var(--forge-accent);
+        }
+
+        .notification.error {
+            background: var(--forge-red);
+        }
+
+        .notification.info {
+            background: #3498db;
+        }
+
+        .notification.fade-out {
+            animation: fade-out 0.5s ease forwards;
+        }
+
+        @keyframes slide-in {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fade-out {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        /* ===== RESPONSIVE STYLES ===== */
+        @media (max-width: 1200px) {
+            .card-grid {
+                grid-template-columns: repeat(4, 1fr);
+                grid-template-rows: repeat(3, auto);
+            }
+
+            .forge {
+                width: 350px;
+                height: 220px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .card-grid {
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(4, auto);
+            }
+
+            .hero h2 {
+                font-size: 2.8rem;
+            }
+
+            .forge {
+                width: 300px;
+                height: 190px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .card-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(5, auto);
+            }
+
+            .hero h2 {
+                font-size: 2.2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .forge {
+                width: 250px;
+                height: 160px;
+            }
+
+            .forge-title h3 {
+                font-size: 1.8rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(10, auto);
+            }
+
+            .format-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .hero h2 {
+                font-size: 1.8rem;
+            }
+
+            .forge {
+                width: 200px;
+                height: 130px;
+            }
+
+            .forge-title h3 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="loading-forge"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="https://i.imgur.com/8LIxaXb.png" alt="Forge Logo">
+                    <h1>Forge of Decks</h1>
+                </div>
+                <nav class="nav-links">
+                    <a href="index.html" class="active">Home</a>
+                    <a href="synergies.html">Saved Synergies</a>
+                    <a href="#">Deck Builder</a>
+                    <a href="#">Collection</a>
+                    <a href="#">About</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h2>Forge Your Perfect Deck</h2>
+            <p>Harness the power of the forge to craft powerful Magic: The Gathering decks. Select your format, choose
+                your cards, and create a masterpiece that will dominate the battlefield.</p>
+        </div>
+    </section>
+
+    <!-- Forge Centerpiece -->
+    <section class="forge-centerpiece">
+        <div class="forge">
+            <div class="forge-sparks" id="forge-sparks"></div>
+        </div>
+        <div class="forge-title">
+            <h3>The Forge Awaits</h3>
+        </div>
+    </section>
+
+    <!-- Format Selection -->
+    <section class="format-selection">
+        <div class="container">
+            <h3>Choose Your Format</h3>
+            <div class="format-buttons">
+                <button class="format-btn" data-format="standard">Standard</button>
+                <button class="format-btn" data-format="modern">Modern</button>
+                <button class="format-btn" data-format="commander">Commander</button>
+                <button class="format-btn" data-format="pioneer">Pioneer</button>
+                <button class="format-btn" data-format="legacy">Legacy</button>
+                <button class="format-btn" data-format="vintage">Vintage</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Card Display -->
+    <section class="card-display">
+        <div class="container">
+            <div class="card-grid" id="card-grid">
+                <!-- Cards will be dynamically inserted here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Deck Builder -->
+    <section class="deck-builder">
+        <div class="container">
+            <h3>Your Deck</h3>
+            <div class="deck-info">
+                <div class="deck-stats">
+                    <div class="stat">
+                        <div class="stat-value" id="card-count">0</div>
+                        <div class="stat-label">Cards</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="avg-cmc">0.00</div>
+                        <div class="stat-label">Avg CMC</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="deck-format">-</div>
+                        <div class="stat-label">Format</div>
+                    </div>
+                </div>
+                <div class="deck-actions">
+                    <button class="deck-btn" id="analyze-deck">Analyze Deck</button>
+                    <button class="deck-btn" id="auto-build-deck">Auto-Build Deck</button>
+                    <button class="deck-btn" id="save-deck">Save Deck</button>
+                    <button class="deck-btn" id="clear-deck">Clear Deck</button>
+                </div>
+
+            </div>
+            <div class="deck-cards" id="deck-cards">
+                <p>Select cards from above to build your deck.</p>
+            </div>
+            <div class="synergy-info" id="synergy-info">
+                <!-- Synergy information will be displayed here -->
+            </div>
+        </div>
+    </section>
+    <!-- Auto-Build Deck Modal -->
+    <div id="auto-build-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">×</span>
+            <h2>Auto-Build Deck</h2>
+
+            <div class="auto-build-options">
+                <div class="option-group">
+                    <label for="auto-build-format">Format:</label>
+                    <select id="auto-build-format">
+                        <option value="commander">Commander</option>
+                        <option value="standard">Standard</option>
+                        <option value="modern">Modern</option>
+                        <option value="pioneer">Pioneer</option>
+                        <option value="legacy">Legacy</option>
+                    </select>
+                </div>
+
+                <div class="option-group">
+                    <label for="auto-build-size">Deck Size:</label>
+                    <select id="auto-build-size">
+                        <option value="60">60 cards</option>
+                        <option value="100" selected>100 cards (Commander)</option>
+                        <option value="40">40 cards (Limited)</option>
+                    </select>
+                </div>
+
+                <div class="option-group">
+                    <label for="auto-build-start">Start with:</label>
+                    <select id="auto-build-start">
+                        <option value="commander">Commander (for Commander format)</option>
+                        <option value="random">Random High-Synergy Card</option>
+                        <option value="current">Current Selected Card</option>
+                    </select>
+                </div>
+
+                <div class="option-group">
+                    <label for="auto-build-synergy">Minimum Synergy:</label>
+                    <select id="auto-build-synergy">
+                        <option value="0.9">Very High (90%+)</option>
+                        <option value="0.8" selected>High (80%+)</option>
+                        <option value="0.7">Medium (70%+)</option>
+                        <option value="0.6">Low (60%+)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="auto-build-actions">
+                <button id="start-auto-build" class="deck-btn">Build Deck</button>
+                <button id="cancel-auto-build" class="deck-btn secondary">Cancel</button>
+            </div>
+
+            <div id="auto-build-progress" class="auto-build-progress" style="display: none;">
+                <h3>Building Deck...</h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar"></div>
+                </div>
+                <div class="progress-status">Finding high-synergy cards...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="https://i.imgur.com/8LIxaXb.png" alt="Forge Logo">
+                    <h4>Forge of Decks</h4>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© 2023 Forge of Decks. All rights reserved. Not affiliated with Wizards of the Coast.</p>
+            </div>
+        </div>
+    </footer>
+    <!-- Enhanced Card Toast -->
+    <div id="card-toast" class="card-toast hidden">
+        <div class="toast-header">
+            <h3 class="toast-title">Card Name</h3>
+            <button class="toast-close">×</button>
+        </div>
+        <div class="toast-content">
+            <div class="toast-image-container">
+                <img src="" alt="Card Image" class="toast-image">
+                <div class="toast-image-loading">Loading...</div>
+            </div>
+            <div class="toast-details">
+                <div class="toast-type-line"></div>
+                <div class="toast-oracle-text"></div>
+                <div class="toast-stats">
+                    <div class="toast-stat">
+                        <span class="stat-label">CMC:</span>
+                        <span class="stat-value cmc-value">0</span>
+                    </div>
+                    <div class="toast-stat">
+                        <span class="stat-label">Price:</span>
+                        <span class="stat-value price-value">$0.00</span>
+                    </div>
+                    <div class="toast-stat">
+                        <span class="stat-label">Synergy:</span>
+                        <span class="stat-value synergy-value">0%</span>
+                    </div>
+                </div>
+                <div class="toast-legality"></div>
+                <div class="toast-synergies">
+                    <h4>Top Synergies in Your Deck</h4>
+                    <div class="toast-synergy-list"></div>
+                </div>
+            </div>
+        </div>
+        <div class="toast-actions">
+            <button class="toast-action add-to-deck">Add to Deck</button>
+            <button class="toast-action view-on-scryfall">View on Scryfall</button>
+            <button class="toast-action find-synergies">Find Synergies</button>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container" class="notification-container"></div>
+
+    <script>
+        // Wait for DOM to load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Hide loading screen after a delay
+            setTimeout(function () {
+                document.getElementById('loading').classList.add('hidden');
+            }, 1500);
+
+            // Create forge sparks
+            createSparks();
+
+            // Initialize format buttons
+            initFormatButtons();
+
+            // Initialize deck functionality
+            initDeckBuilder();
+        });
+
+        // Initialize the toast system
+        function initToastSystem() {
+            // Add keyboard event listener for toast navigation
+            document.addEventListener('keydown', function (event) {
+                // Close toast with Escape key
+                if (event.key === 'Escape') {
+                    hideCardToast();
+                }
+            });
+
+            // Add click outside to dismiss toast
+            document.addEventListener('click', function (event) {
+                const toast = document.getElementById('card-toast');
+
+                // If toast is visible and click is outside the toast
+                if (!toast.classList.contains('hidden') && !toast.contains(event.target)) {
+                    // Check if the click was on a card (don't dismiss if clicking on a card)
+                    const clickedCard = event.target.closest('.card');
+                    if (!clickedCard) {
+                        hideCardToast();
+                    }
+                }
+            });
+        }
+
+        // Call this in your main initialization function
+        document.addEventListener('DOMContentLoaded', function () {
+            // Other initialization code...
+
+            initToastSystem();
+        });
+
+        // Show enhanced card toast with detailed information
+        function showCardToast(card) {
+            // Store the current card
+            currentToastCard = card;
+
+            // Get toast elements
+            const toast = document.getElementById('card-toast');
+            const title = toast.querySelector('.toast-title');
+            const image = toast.querySelector('.toast-image');
+            const imageLoading = toast.querySelector('.toast-image-loading');
+            const typeLine = toast.querySelector('.toast-type-line');
+            const oracleText = toast.querySelector('.toast-oracle-text');
+            const cmcValue = toast.querySelector('.cmc-value');
+            const priceValue = toast.querySelector('.price-value');
+            const synergyValue = toast.querySelector('.synergy-value');
+            const legalitySection = toast.querySelector('.toast-legality');
+            const synergyList = toast.querySelector('.toast-synergy-list');
+            const addToDeckBtn = toast.querySelector('.add-to-deck');
+
+            // Clear previous content
+            toast.querySelectorAll('.toast-synergy-types, .toast-stat:not(:nth-child(-n+3))').forEach(el => el.remove());
+
+            // Set basic card information
+            title.textContent = card.name;
+            typeLine.textContent = card.type_line || 'Unknown Type';
+            cmcValue.textContent = card.cmc || '0';
+
+            // Set oracle text with keyword highlighting
+            if (card.oracle_text) {
+                oracleText.innerHTML = highlightKeywords(card.oracle_text);
+            } else {
+                oracleText.textContent = 'No text available';
+            }
+
+            // Load card image from Scryfall
+            image.style.opacity = '0';
+            imageLoading.style.display = 'flex';
+
+            const imageUrl = `https://api.scryfall.com/cards/named?format=image&exact=${encodeURIComponent(card.name)}`;
+            image.src = imageUrl;
+            image.onload = function () {
+                image.style.opacity = '1';
+                imageLoading.style.display = 'none';
+            };
+            image.onerror = function () {
+                image.src = 'https://c1.scryfall.com/file/scryfall-card-backs/large/59/597b79b3-7d77-4261-871a-60dd17403388.jpg';
+                image.style.opacity = '1';
+                imageLoading.style.display = 'none';
+            };
+
+            // Fetch additional data from Scryfall for price
+            fetchScryfallData(card.name)
+                .then(scryfallData => {
+                    if (scryfallData && scryfallData.prices) {
+                        const price = scryfallData.prices.usd || scryfallData.prices.usd_foil || 'N/A';
+                        priceValue.textContent = price !== 'N/A' ? `$${price}` : 'N/A';
+
+                        // Display legality information
+                        if (scryfallData.legalities) {
+                            legalitySection.innerHTML = '';
+                            const formats = ['standard', 'modern', 'commander', 'pioneer', 'legacy', 'vintage'];
+                            formats.forEach(format => {
+                                const legal = scryfallData.legalities[format];
+                                const legalitySpan = document.createElement('span');
+                                legalitySpan.className = legal === 'legal' ? 'format-legal' : 'format-not-legal';
+                                legalitySpan.textContent = format.charAt(0).toUpperCase() + format.slice(1);
+                                legalitySection.appendChild(legalitySpan);
+                            });
+                        }
+
+                        // If we have color identity from Scryfall, use it
+                        if (scryfallData.color_identity && !card.color_identity) {
+                            card.color_identity = scryfallData.color_identity;
+                        }
+                    } else {
+                        priceValue.textContent = 'N/A';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching Scryfall data:', error);
+                    priceValue.textContent = 'Error';
+                });
+
+            // Fetch detailed card information from our API
+            fetch(`api.php?action=card_details&id=${card.id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.warn('API warning:', data.error);
+                        // Continue anyway, we'll use what we have
+                    }
+
+                    if (data.card) {
+                        // Update synergy value if available
+                        if (data.card.avg_synergy) {
+                            synergyValue.textContent = `${(data.card.avg_synergy * 100).toFixed(1)}%`;
+                        }
+
+                        // Add synergy types if available
+                        if (data.card.synergy_types && data.card.synergy_types.length > 0) {
+                            const synTypesSection = document.createElement('div');
+                            synTypesSection.className = 'toast-synergy-types';
+                            synTypesSection.innerHTML = '<h4>Common Synergy Types</h4>';
+
+                            const typesList = document.createElement('div');
+                            typesList.className = 'synergy-types-list';
+
+                            data.card.synergy_types.forEach(type => {
+                                const typeItem = document.createElement('div');
+                                typeItem.className = 'synergy-type-item';
+                                typeItem.innerHTML = `
+                            <span class="synergy-type-name">${type.combo_type.replace(/_/g, ' ')}</span>
+                            <span class="synergy-type-count">${type.count}</span>
+                        `;
+                                typesList.appendChild(typeItem);
+                            });
+
+                            synTypesSection.appendChild(typesList);
+
+                            // Add after the synergy list
+                            const synergySection = toast.querySelector('.toast-synergies');
+                            synergySection.appendChild(synTypesSection);
+                        }
+
+                        // Add power/toughness or loyalty if available
+                        if (data.card.power && data.card.toughness) {
+                            const ptStat = document.createElement('div');
+                            ptStat.className = 'toast-stat';
+                            ptStat.innerHTML = `
+                        <span class="stat-label">P/T:</span>
+                        <span class="stat-value">${data.card.power}/${data.card.toughness}</span>
+                    `;
+                            toast.querySelector('.toast-stats').appendChild(ptStat);
+                        } else if (data.card.loyalty) {
+                            const loyaltyStat = document.createElement('div');
+                            loyaltyStat.className = 'toast-stat';
+                            loyaltyStat.innerHTML = `
+                        <span class="stat-label">Loyalty:</span>
+                        <span class="stat-value">${data.card.loyalty}</span>
+                    `;
+                            toast.querySelector('.toast-stats').appendChild(loyaltyStat);
+                        }
+
+                        // Add rarity and set info
+                        if (data.card.rarity || data.card.set_name) {
+                            const rarityStat = document.createElement('div');
+                            rarityStat.className = 'toast-stat';
+                            rarityStat.innerHTML = `
+                        <span class="stat-label">Set:</span>
+                        <span class="stat-value">${data.card.set_name || 'Unknown'} (${data.card.rarity || 'Unknown'})</span>
+                    `;
+                            toast.querySelector('.toast-stats').appendChild(rarityStat);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching card details:', error);
+                    // Continue anyway, we'll use what we have
+                });
+
+            // Find synergies with current deck
+            findSynergiesWithToastCard(card, synergyList, synergyValue);
+
+            // Set up action buttons
+            addToDeckBtn.onclick = function () {
+                addCardToDeck(card);
+            };
+
+            toast.querySelector('.view-on-scryfall').onclick = function () {
+                window.open(`https://scryfall.com/search?q=${encodeURIComponent(card.name)}`, '_blank');
+            };
+
+            toast.querySelector('.find-synergies').onclick = function () {
+                showCardSynergies(card.id);
+                hideCardToast(); // Hide toast when showing synergies
+            };
+
+            // Show the toast
+            toast.classList.remove('hidden');
+
+            // Set up close button
+            toast.querySelector('.toast-close').onclick = function () {
+                hideCardToast();
+            };
+        }
+
+        // Show enhanced card toast with detailed information
+        function showCardToast(card) {
+            // Store the current card
+            currentToastCard = card;
+
+            // Get toast elements
+            const toast = document.getElementById('card-toast');
+            const title = toast.querySelector('.toast-title');
+            const image = toast.querySelector('.toast-image');
+            const imageLoading = toast.querySelector('.toast-image-loading');
+            const typeLine = toast.querySelector('.toast-type-line');
+            const oracleText = toast.querySelector('.toast-oracle-text');
+            const cmcValue = toast.querySelector('.cmc-value');
+            const priceValue = toast.querySelector('.price-value');
+            const synergyValue = toast.querySelector('.synergy-value');
+            const legalitySection = toast.querySelector('.toast-legality');
+            const synergyList = toast.querySelector('.toast-synergy-list');
+            const addToDeckBtn = toast.querySelector('.add-to-deck');
+
+            // Clear previous content
+            toast.querySelectorAll('.toast-synergy-types, .toast-stat:not(:nth-child(-n+3))').forEach(el => el.remove());
+
+            // Set basic card information
+            title.textContent = card.name;
+            typeLine.textContent = card.type_line || 'Unknown Type';
+            cmcValue.textContent = card.cmc || '0';
+
+            // Set oracle text with keyword highlighting
+            if (card.oracle_text) {
+                oracleText.innerHTML = highlightKeywords(card.oracle_text);
+            } else {
+                oracleText.textContent = 'No text available';
+            }
+
+            // Load card image from Scryfall
+            image.style.opacity = '0';
+            imageLoading.style.display = 'flex';
+
+            const imageUrl = `https://api.scryfall.com/cards/named?format=image&exact=${encodeURIComponent(card.name)}`;
+            image.src = imageUrl;
+            image.onload = function () {
+                image.style.opacity = '1';
+                imageLoading.style.display = 'none';
+            };
+            image.onerror = function () {
+                image.src = 'https://c1.scryfall.com/file/scryfall-card-backs/large/59/597b79b3-7d77-4261-871a-60dd17403388.jpg';
+                image.style.opacity = '1';
+                imageLoading.style.display = 'none';
+            };
+
+            // Fetch additional data from Scryfall for price
+            fetchScryfallData(card.name)
+                .then(scryfallData => {
+                    if (scryfallData && scryfallData.prices) {
+                        const price = scryfallData.prices.usd || scryfallData.prices.usd_foil || 'N/A';
+                        priceValue.textContent = price !== 'N/A' ? `$${price}` : 'N/A';
+
+                        // Display legality information
+                        if (scryfallData.legalities) {
+                            legalitySection.innerHTML = '';
+                            const formats = ['standard', 'modern', 'commander', 'pioneer', 'legacy', 'vintage'];
+                            formats.forEach(format => {
+                                const legal = scryfallData.legalities[format];
+                                const legalitySpan = document.createElement('span');
+                                legalitySpan.className = legal === 'legal' ? 'format-legal' : 'format-not-legal';
+                                legalitySpan.textContent = format.charAt(0).toUpperCase() + format.slice(1);
+                                legalitySection.appendChild(legalitySpan);
+                            });
+                        }
+
+                        // If we have color identity from Scryfall, use it
+                        if (scryfallData.color_identity && !card.color_identity) {
+                            card.color_identity = scryfallData.color_identity;
+                        }
+                    } else {
+                        priceValue.textContent = 'N/A';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching Scryfall data:', error);
+                    priceValue.textContent = 'Error';
+                });
+
+            // Fetch detailed card information from our API
+            fetch(`api.php?action=card_details&id=${card.id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.warn('API warning:', data.error);
+                        // Continue anyway, we'll use what we have
+                    }
+
+                    if (data.card) {
+                        // Update synergy value if available
+                        if (data.card.avg_synergy) {
+                            synergyValue.textContent = `${(data.card.avg_synergy * 100).toFixed(1)}%`;
+                        }
+
+                        // Add synergy types if available
+                        if (data.card.synergy_types && data.card.synergy_types.length > 0) {
+                            const synTypesSection = document.createElement('div');
+                            synTypesSection.className = 'toast-synergy-types';
+                            synTypesSection.innerHTML = '<h4>Common Synergy Types</h4>';
+
+                            const typesList = document.createElement('div');
+                            typesList.className = 'synergy-types-list';
+
+                            data.card.synergy_types.forEach(type => {
+                                const typeItem = document.createElement('div');
+                                typeItem.className = 'synergy-type-item';
+                                typeItem.innerHTML = `
+                            <span class="synergy-type-name">${type.combo_type.replace(/_/g, ' ')}</span>
+                            <span class="synergy-type-count">${type.count}</span>
+                        `;
+                                typesList.appendChild(typeItem);
+                            });
+
+                            synTypesSection.appendChild(typesList);
+
+                            // Add after the synergy list
+                            const synergySection = toast.querySelector('.toast-synergies');
+                            synergySection.appendChild(synTypesSection);
+                        }
+
+                        // Add power/toughness or loyalty if available
+                        if (data.card.power && data.card.toughness) {
+                            const ptStat = document.createElement('div');
+                            ptStat.className = 'toast-stat';
+                            ptStat.innerHTML = `
+                        <span class="stat-label">P/T:</span>
+                        <span class="stat-value">${data.card.power}/${data.card.toughness}</span>
+                    `;
+                            toast.querySelector('.toast-stats').appendChild(ptStat);
+                        } else if (data.card.loyalty) {
+                            const loyaltyStat = document.createElement('div');
+                            loyaltyStat.className = 'toast-stat';
+                            loyaltyStat.innerHTML = `
+                        <span class="stat-label">Loyalty:</span>
+                        <span class="stat-value">${data.card.loyalty}</span>
+                    `;
+                            toast.querySelector('.toast-stats').appendChild(loyaltyStat);
+                        }
+
+                        // Add rarity and set info
+                        if (data.card.rarity || data.card.set_name) {
+                            const rarityStat = document.createElement('div');
+                            rarityStat.className = 'toast-stat';
+                            rarityStat.innerHTML = `
+                        <span class="stat-label">Set:</span>
+                        <span class="stat-value">${data.card.set_name || 'Unknown'} (${data.card.rarity || 'Unknown'})</span>
+                    `;
+                            toast.querySelector('.toast-stats').appendChild(rarityStat);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching card details:', error);
+                    // Continue anyway, we'll use what we have
+                });
+
+            // Find synergies with current deck
+            findSynergiesWithToastCard(card, synergyList, synergyValue);
+
+            // Set up action buttons
+            addToDeckBtn.onclick = function () {
+                addCardToDeck(card);
+            };
+
+            toast.querySelector('.view-on-scryfall').onclick = function () {
+                window.open(`https://scryfall.com/search?q=${encodeURIComponent(card.name)}`, '_blank');
+            };
+
+            toast.querySelector('.find-synergies').onclick = function () {
+                showCardSynergies(card.id);
+                hideCardToast(); // Hide toast when showing synergies
+            };
+
+            // Show the toast
+            toast.classList.remove('hidden');
+
+            // Set up close button
+            toast.querySelector('.toast-close').onclick = function () {
+                hideCardToast();
+            };
+        }
+
+        // Global variable to track the currently displayed card
+        let currentToastCard = null;
+
+        // Show enhanced card toast with detailed information
+        function showCardToast(card) {
+            // Store the current card
+            currentToastCard = card;
+
+            // Get toast elements
+            const toast = document.getElementById('card-toast');
+            const title = toast.querySelector('.toast-title');
+            const image = toast.querySelector('.toast-image');
+            const imageLoading = toast.querySelector('.toast-image-loading');
+            const typeLine = toast.querySelector('.toast-type-line');
+            const oracleText = toast.querySelector('.toast-oracle-text');
+            const cmcValue = toast.querySelector('.cmc-value');
+            const priceValue = toast.querySelector('.price-value');
+            const synergyValue = toast.querySelector('.synergy-value');
+            const legalitySection = toast.querySelector('.toast-legality');
+            const synergyList = toast.querySelector('.toast-synergy-list');
+            const addToDeckBtn = toast.querySelector('.add-to-deck');
+
+            // Clear previous content
+            toast.querySelectorAll('.toast-synergy-types, .toast-stat:not(:nth-child(-n+3))').forEach(el => el.remove());
+
+            // Set basic card information
+            title.textContent = card.name;
+            typeLine.textContent = card.type_line || 'Unknown Type';
+            cmcValue.textContent = card.cmc || '0';
+
+            // Set oracle text with keyword highlighting
+            if (card.oracle_text) {
+                oracleText.innerHTML = highlightKeywords(card.oracle_text);
+            } else {
+                oracleText.textContent = 'No text available';
+            }
+
+            // Load card image from Scryfall
+            image.style.opacity = '0';
+            imageLoading.style.display = 'flex';
+
+            const imageUrl = `https://api.scryfall.com/cards/named?format=image&exact=${encodeURIComponent(card.name)}`;
+            image.src = imageUrl;
+            image.onload = function () {
+                image.style.opacity = '1';
+                imageLoading.style.display = 'none';
+            };
+            image.onerror = function () {
+                image.src = 'https://c1.scryfall.com/file/scryfall-card-backs/large/59/597b79b3-7d77-4261-871a-60dd17403388.jpg';
+                image.style.opacity = '1';
+                imageLoading.style.display = 'none';
+            };
+
+            // Fetch additional data from Scryfall for price
+            fetchScryfallData(card.name)
+                .then(scryfallData => {
+                    if (scryfallData && scryfallData.prices) {
+                        const price = scryfallData.prices.usd || scryfallData.prices.usd_foil || 'N/A';
+                        priceValue.textContent = price !== 'N/A' ? `$${price}` : 'N/A';
+
+                        // Display legality information
+                        if (scryfallData.legalities) {
+                            legalitySection.innerHTML = '';
+                            const formats = ['standard', 'modern', 'commander', 'pioneer', 'legacy', 'vintage'];
+                            formats.forEach(format => {
+                                const legal = scryfallData.legalities[format];
+                                const legalitySpan = document.createElement('span');
+                                legalitySpan.className = legal === 'legal' ? 'format-legal' : 'format-not-legal';
+                                legalitySpan.textContent = format.charAt(0).toUpperCase() + format.slice(1);
+                                legalitySection.appendChild(legalitySpan);
+                            });
+                        }
+
+                        // If we have color identity from Scryfall, use it
+                        if (scryfallData.color_identity && !card.color_identity) {
+                            card.color_identity = scryfallData.color_identity;
+                        }
+                    } else {
+                        priceValue.textContent = 'N/A';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching Scryfall data:', error);
+                    priceValue.textContent = 'Error';
+                });
+
+            // Fetch detailed card information from our API
+            fetch(`api.php?action=card_details&id=${card.id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.warn('API warning:', data.error);
+                        // Continue anyway, we'll use what we have
+                    }
+
+                    if (data.card) {
+                        // Update synergy value if available
+                        if (data.card.avg_synergy) {
+                            synergyValue.textContent = `${(data.card.avg_synergy * 100).toFixed(1)}%`;
+                        }
+
+                        // Add synergy types if available
+                        if (data.card.synergy_types && data.card.synergy_types.length > 0) {
+                            const synTypesSection = document.createElement('div');
+                            synTypesSection.className = 'toast-synergy-types';
+                            synTypesSection.innerHTML = '<h4>Common Synergy Types</h4>';
+
+                            const typesList = document.createElement('div');
+                            typesList.className = 'synergy-types-list';
+
+                            data.card.synergy_types.forEach(type => {
+                                const typeItem = document.createElement('div');
+                                typeItem.className = 'synergy-type-item';
+                                typeItem.innerHTML = `
+                            <span class="synergy-type-name">${type.combo_type.replace(/_/g, ' ')}</span>
+                            <span class="synergy-type-count">${type.count}</span>
+                        `;
+                                typesList.appendChild(typeItem);
+                            });
+
+                            synTypesSection.appendChild(typesList);
+
+                            // Add after the synergy list
+                            const synergySection = toast.querySelector('.toast-synergies');
+                            synergySection.appendChild(synTypesSection);
+                        }
+
+                        // Add power/toughness or loyalty if available
+                        if (data.card.power && data.card.toughness) {
+                            const ptStat = document.createElement('div');
+                            ptStat.className = 'toast-stat';
+                            ptStat.innerHTML = `
+                        <span class="stat-label">P/T:</span>
+                        <span class="stat-value">${data.card.power}/${data.card.toughness}</span>
+                    `;
+                            toast.querySelector('.toast-stats').appendChild(ptStat);
+                        } else if (data.card.loyalty) {
+                            const loyaltyStat = document.createElement('div');
+                            loyaltyStat.className = 'toast-stat';
+                            loyaltyStat.innerHTML = `
+                        <span class="stat-label">Loyalty:</span>
+                        <span class="stat-value">${data.card.loyalty}</span>
+                    `;
+                            toast.querySelector('.toast-stats').appendChild(loyaltyStat);
+                        }
+
+                        // Add rarity and set info
+                        if (data.card.rarity || data.card.set_name) {
+                            const rarityStat = document.createElement('div');
+                            rarityStat.className = 'toast-stat';
+                            rarityStat.innerHTML = `
+                        <span class="stat-label">Set:</span>
+                        <span class="stat-value">${data.card.set_name || 'Unknown'} (${data.card.rarity || 'Unknown'})</span>
+                    `;
+                            toast.querySelector('.toast-stats').appendChild(rarityStat);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching card details:', error);
+                    // Continue anyway, we'll use what we have
+                });
+
+            // Find synergies with current deck
+            findSynergiesWithToastCard(card, synergyList, synergyValue);
+
+            // Set up action buttons
+            addToDeckBtn.onclick = function () {
+                addCardToDeck(card);
+            };
+
+            toast.querySelector('.view-on-scryfall').onclick = function () {
+                window.open(`https://scryfall.com/search?q=${encodeURIComponent(card.name)}`, '_blank');
+            };
+
+            toast.querySelector('.find-synergies').onclick = function () {
+                showCardSynergies(card.id);
+                hideCardToast(); // Hide toast when showing synergies
+            };
+
+            // Show the toast
+            toast.classList.remove('hidden');
+
+            // Set up close button
+            toast.querySelector('.toast-close').onclick = function () {
+                hideCardToast();
+            };
+        }
+
+        // Hide the card toast
+        function hideCardToast() {
+            const toast = document.getElementById('card-toast');
+            toast.classList.add('hidden');
+            currentToastCard = null;
+        }
+
+        // Fetch card data from Scryfall
+        function fetchScryfallData(cardName) {
+            return fetch(`https://api.scryfall.com/cards/named?exact=${encodeURIComponent(cardName)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    console.error('Error fetching from Scryfall:', error);
+                    return null;
+                });
+        }
+
+        // Find synergies between the toast card and the current deck
+        function findSynergiesWithToastCard(card, synergyListElement, synergyValueElement) {
+            // Clear previous synergies
+            synergyListElement.innerHTML = '';
+            synergyValueElement.textContent = 'Calculating...';
+
+            // Get all cards in the deck
+            const deckCards = [...window.deckState.cards];
+            if (window.deckState.commander) {
+                deckCards.push(window.deckState.commander);
+            }
+
+            // If deck is empty, show message
+            if (deckCards.length === 0) {
+                synergyListElement.innerHTML = '<div class="empty-synergies">Add cards to your deck to see synergies</div>';
+                synergyValueElement.textContent = 'N/A';
+                return;
+            }
+
+            // Create an array of promises to fetch synergies for each card pair
+            const synergiesPromises = deckCards.map(deckCard => {
+                // Skip if it's the same card
+                if (deckCard.id === card.id) return Promise.resolve(null);
+
+                // Fetch synergy between these two cards
+                return fetch(`api.php?action=card_pair&card1_id=${card.id}&card2_id=${deckCard.id}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error || !data.synergy) return null;
+                        return {
+                            card: deckCard,
+                            synergy: data.synergy
+                        };
+                    })
+                    .catch(error => {
+                        console.error('Error fetching synergy:', error);
+                        return null;
+                    });
+            });
+
+            // Wait for all synergy requests to complete
+            Promise.all(synergiesPromises)
+                .then(results => {
+                    // Filter out null results
+                    const synergies = results.filter(result => result !== null && result.synergy !== null);
+
+                    // Sort by synergy score
+                    synergies.sort((a, b) => b.synergy.synergy_score - a.synergy.synergy_score);
+
+                    // Calculate average synergy
+                    if (synergies.length > 0) {
+                        const avgSynergy = synergies.reduce((sum, item) => sum + item.synergy.synergy_score, 0) / synergies.length;
+                        synergyValueElement.textContent = `${(avgSynergy * 100).toFixed(1)}%`;
+                    } else {
+                        synergyValueElement.textContent = 'N/A';
+                    }
+
+                    // Display top synergies
+                    if (synergies.length > 0) {
+                        synergies.slice(0, 5).forEach(item => {
+                            const synergyItem = document.createElement('div');
+                            synergyItem.className = 'toast-synergy-item';
+
+                            synergyItem.innerHTML = `
+                        <div class="toast-synergy-name">${item.card.name}</div>
+                        <div class="toast-synergy-score">${(item.synergy.synergy_score * 100).toFixed(1)}%</div>
+                    `;
+
+                            // Add click event to show this card's toast
+                            synergyItem.addEventListener('click', function () {
+                                showCardToast(item.card);
+                            });
+
+                            synergyListElement.appendChild(synergyItem);
+                        });
+                    } else {
+                        synergyListElement.innerHTML = '<div class="empty-synergies">No synergies found with your deck</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error finding synergies:', error);
+                    synergyListElement.innerHTML = '<div class="empty-synergies">Error finding synergies</div>';
+                    synergyValueElement.textContent = 'Error';
+                });
+        }
+
+        // Highlight keywords in card text
+        function highlightKeywords(text) {
+            if (!text) return '';
+
+            // List of MTG keywords to highlight
+            const keywords = [
+                'Flying', 'First strike', 'Double strike', 'Deathtouch', 'Haste',
+                'Hexproof', 'Indestructible', 'Lifelink', 'Menace', 'Protection',
+                'Reach', 'Trample', 'Vigilance', 'Flash', 'Defender', 'Enchant',
+                'Equip', 'Kicker', 'Surge', 'Aftermath', 'Entwine', 'Replicate',
+                'Conspire', 'Overload', 'Buyback', 'Cycling', 'Echo', 'Evoke',
+                'Miracle', 'Prowess', 'Exploit', 'Myriad', 'Totem armor', 'Devoid',
+                'Hexproof from', 'Ingest', 'Morbid', 'Extort', 'Cascade', 'Annihilator',
+                'Cipher', 'Scavenge', 'Unleash', 'Soulbond', 'Riot', 'Mentor', 'Convoke',
+                'Delve', 'Emerge', 'Escalate', 'Melee', 'Improvise', 'Embalm', 'Eternalize',
+                'Afflict', 'Ascend', 'Assist', 'Jump-start', 'Afterlife', 'Spectacle', 'Escape',
+                'Companion', 'Mutate', 'Encore', 'Foretell', 'Boast', 'Ward', 'Daybound', 'Nightbound',
+                'Disturb', 'Decayed', 'Cleave', 'Training', 'Compleated', 'Reconfigure', 'Blitz',
+                'Casualty', 'Enlist', 'Read ahead', 'Unearth', 'Prototype', 'For Mirrodin!', 'Toxic',
+                'Corrupted', 'Bargain', 'Incubate', 'More Than Meets the Eye', 'Living Metal', 'Flash',
+                'Prowess', 'Affinity', 'Exalted', 'Persist', 'Undying', 'Modular', 'Sunburst', 'Infect',
+                'Proliferate', 'Suspend', 'Cumulative upkeep', 'Fading', 'Vanishing', 'Phasing',
+                'Morph', 'Megamorph', 'Manifest', 'Forecast', 'Graft', 'Bloodthirst', 'Wither',
+                'Retrace', 'Devour', 'Unearth', 'Exalted', 'Landfall', 'Metalcraft', 'Imprint',
+                'Battle cry', 'Living weapon', 'Undying', 'Soulbond', 'Evolve', 'Cipher', 'Fuse',
+                'Bestow', 'Tribute', 'Dethrone', 'Outlast', 'Prowess', 'Dash', 'Renown', 'Awaken',
+                'Ingest', 'Devoid', 'Surge', 'Skulk', 'Emerge', 'Escalate', 'Melee', 'Crew',
+                'Fabricate', 'Partner', 'Undaunted', 'Improvise', 'Aftermath', 'Embalm', 'Eternalize',
+                'Afflict', 'Ascend', 'Assist', 'Jump-start', 'Mentor', 'Afterlife', 'Riot', 'Spectacle',
+                'Escape', 'Companion', 'Mutate', 'Encore', 'Foretell', 'Boast', 'Ward', 'Daybound',
+                'Nightbound', 'Disturb', 'Decayed', 'Cleave', 'Training', 'Compleated', 'Reconfigure',
+                'Blitz', 'Casualty', 'Enlist', 'Read ahead', 'Unearth', 'Prototype', 'For Mirrodin!',
+                'Toxic', 'Corrupted', 'Bargain', 'Incubate', 'More Than Meets the Eye', 'Living Metal'
+            ];
+
+            // Also highlight synergistic terms based on current deck
+            const deckKeywords = extractDeckKeywords();
+            const allKeywords = [...keywords, ...deckKeywords];
+
+            // Replace line breaks with HTML line breaks
+            let htmlText = text.replace(/\n/g, '<br>');
+
+            // Highlight keywords
+            allKeywords.forEach(keyword => {
+                // Create a regex that matches the keyword as a whole word
+                const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+
+                // For deck keywords, use a different highlight class
+                const highlightClass = deckKeywords.includes(keyword) ? 'highlight' : 'keyword';
+
+                // Replace the keyword with a highlighted version
+                htmlText = htmlText.replace(regex, `<span class="${highlightClass}">$&</span>`);
+            });
+
+            return htmlText;
+        }
+
+        // Extract keywords from cards in the current deck
+        function extractDeckKeywords() {
+            const keywords = new Set();
+
+            // Get all cards in the deck
+            const deckCards = [...window.deckState.cards];
+            if (window.deckState.commander) {
+                deckCards.push(window.deckState.commander);
+            }
+
+            // Extract significant words from card names and types
+            deckCards.forEach(card => {
+                // Extract from name (skip common words)
+                if (card.name) {
+                    const nameWords = card.name.split(/[,\s]+/).filter(word =>
+                        word.length > 3 && !['the', 'and', 'that', 'with', 'from', 'this', 'your'].includes(word.toLowerCase())
+                    );
+                    nameWords.forEach(word => keywords.add(word));
+                }
+
+                // Extract from type line
+                if (card.type_line) {
+                    const typeWords = card.type_line.split(/[,\s—]+/).filter(word =>
+                        word.length > 3 && !['the', 'and', 'that', 'with', 'from', 'this', 'your'].includes(word.toLowerCase())
+                    );
+                    typeWords.forEach(word => keywords.add(word));
+                }
+            });
+
+            return Array.from(keywords);
+        }
+
+        // Initialize auto-build deck functionality
+        function initAutoBuildDeck() {
+            const modal = document.getElementById('auto-build-modal');
+            const autoBuildBtn = document.getElementById('auto-build-deck');
+            const closeBtn = document.querySelector('.close-modal');
+            const cancelBtn = document.getElementById('cancel-auto-build');
+            const startBtn = document.getElementById('start-auto-build');
+
+            // Open modal when auto-build button is clicked
+            autoBuildBtn.addEventListener('click', function () {
+                modal.style.display = 'block';
+
+                // Set format to match current selected format
+                const currentFormat = document.querySelector('.format-btn.active')?.dataset.format || 'commander';
+                document.getElementById('auto-build-format').value = currentFormat;
+
+                // Set appropriate deck size based on format
+                if (currentFormat === 'commander') {
+                    document.getElementById('auto-build-size').value = '100';
+                } else {
+                    document.getElementById('auto-build-size').value = '60';
+                }
+            });
+
+            // Close modal when X is clicked
+            closeBtn.addEventListener('click', function () {
+                modal.style.display = 'none';
+            });
+
+            // Close modal when Cancel is clicked
+            cancelBtn.addEventListener('click', function () {
+                modal.style.display = 'none';
+            });
+
+            // Close modal when clicking outside of it
+            window.addEventListener('click', function (event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+
+            // Start auto-building when Build Deck is clicked
+            startBtn.addEventListener('click', function () {
+                const format = document.getElementById('auto-build-format').value;
+                const deckSize = parseInt(document.getElementById('auto-build-size').value);
+                const startWith = document.getElementById('auto-build-start').value;
+                const minSynergy = parseFloat(document.getElementById('auto-build-synergy').value);
+
+                // Start the auto-build process
+                startAutoBuild(format, deckSize, startWith, minSynergy);
+            });
+        }
+
+        // Start the auto-build process
+        function startAutoBuild(format, deckSize, startWith, minSynergy) {
+            // Show progress section
+            const progressSection = document.getElementById('auto-build-progress');
+            progressSection.style.display = 'block';
+
+            // Hide options and buttons
+            document.querySelector('.auto-build-options').style.display = 'none';
+            document.querySelector('.auto-build-actions').style.display = 'none';
+
+            // Reset progress bar
+            const progressBar = document.querySelector('.progress-bar');
+            progressBar.style.width = '0%';
+
+            // Update status
+            const progressStatus = document.querySelector('.progress-status');
+            progressStatus.textContent = 'Finding starting card...';
+
+            // Clear current deck
+            window.deckState.cards = [];
+            window.deckState.commander = null;
+
+            // Step 1: Find a starting card
+            findStartingCard(format, startWith)
+                .then(startingCard => {
+                    if (!startingCard) {
+                        throw new Error('Could not find a suitable starting card');
+                    }
+
+                    progressStatus.textContent = `Starting with: ${startingCard.name}`;
+                    progressBar.style.width = '10%';
+
+                    // If commander format and card is legendary creature, set as commander
+                    if (format === 'commander' &&
+                        startingCard.type_line &&
+                        (startingCard.type_line.includes('Legendary Creature') ||
+                            (startingCard.oracle_text && startingCard.oracle_text.includes('can be your commander')))) {
+                        window.deckState.commander = startingCard;
+                    } else {
+                        // Add as regular card
+                        addCardToDeck(startingCard);
+                    }
+
+                    // Step 2: Build the deck with synergistic cards
+                    return buildDeckWithSynergies(startingCard, format, deckSize, minSynergy, progressBar, progressStatus);
+                })
+                .then(builtDeck => {
+                    // Update progress
+                    progressBar.style.width = '100%';
+                    progressStatus.textContent = `Deck built with ${builtDeck.length} cards!`;
+
+                    // Update deck display
+                    updateDeckDisplay();
+
+                    // Close modal after a delay
+                    setTimeout(() => {
+                        document.getElementById('auto-build-modal').style.display = 'none';
+
+                        // Reset modal for next use
+                        progressSection.style.display = 'none';
+                        document.querySelector('.auto-build-options').style.display = 'block';
+                        document.querySelector('.auto-build-actions').style.display = 'flex';
+
+                        // Show notification
+                        showNotification(`Auto-built a ${format} deck with ${builtDeck.length} cards!`);
+
+                        // Analyze the deck
+                        analyzeDeck();
+                    }, 1500);
+                })
+                .catch(error => {
+                    console.error('Error building deck:', error);
+                    progressStatus.textContent = `Error: ${error.message}`;
+
+                    // Show try again button
+                    const tryAgainBtn = document.createElement('button');
+                    tryAgainBtn.className = 'deck-btn';
+                    tryAgainBtn.textContent = 'Try Again';
+                    tryAgainBtn.style.marginTop = '15px';
+                    tryAgainBtn.addEventListener('click', function () {
+                        // Reset modal
+                        progressSection.style.display = 'none';
+                        document.querySelector('.auto-build-options').style.display = 'block';
+                        document.querySelector('.auto-build-actions').style.display = 'flex';
+                        progressSection.removeChild(tryAgainBtn);
+                    });
+
+                    progressSection.appendChild(tryAgainBtn);
+                });
+        }
+
+        // Find a starting card based on the selected option
+        function findStartingCard(format, startWith) {
+            return new Promise((resolve, reject) => {
+                if (startWith === 'current') {
+                    // Use currently selected card
+                    const selectedCard = document.querySelector('.card.selected');
+                    if (selectedCard) {
+                        const cardId = selectedCard.dataset.cardId;
+
+                        // Fetch card details
+                        fetch(`api.php?action=card&id=${cardId}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.card) {
+                                    resolve(data.card);
+                                } else {
+                                    reject(new Error('Could not get selected card details'));
+                                }
+                            })
+                            .catch(error => reject(error));
+                    } else {
+                        // No card selected, fall back to random
+                        findRandomCard(format).then(resolve).catch(reject);
+                    }
+                } else if (startWith === 'commander' && format === 'commander') {
+                    // Find a legendary creature
+                    fetch(`api.php?action=search&query=legendary+creature&format=commander&random=true&limit=1`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.cards && data.cards.length > 0) {
+                                resolve(data.cards[0]);
+                            } else {
+                                reject(new Error('Could not find a legendary creature'));
+                            }
+                        })
+                        .catch(error => reject(error));
+                } else {
+                    // Random high-synergy card
+                    findRandomCard(format).then(resolve).catch(reject);
+                }
+            });
+        }
+
+        // Find a random card for the selected format
+        function findRandomCard(format) {
+            return new Promise((resolve, reject) => {
+                fetch(`api.php?action=search&query=${format}&random=true&limit=1`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.cards && data.cards.length > 0) {
+                            resolve(data.cards[0]);
+                        } else {
+                            reject(new Error('Could not find a card for this format'));
+                        }
+                    })
+                    .catch(error => reject(error));
+            });
+        }
+
+        // Get a card's color identity
+        function getCardColorIdentity(card) {
+            const colorIdentity = [];
+
+            // Check mana cost for color symbols
+            if (card.mana_cost) {
+                if (card.mana_cost.includes('W')) colorIdentity.push('W');
+                if (card.mana_cost.includes('U')) colorIdentity.push('U');
+                if (card.mana_cost.includes('B')) colorIdentity.push('B');
+                if (card.mana_cost.includes('R')) colorIdentity.push('R');
+                if (card.mana_cost.includes('G')) colorIdentity.push('G');
+            }
+
+            // Check oracle text for color symbols and color identity
+            if (card.oracle_text) {
+                const text = card.oracle_text.toUpperCase();
+
+                // Check for mana symbols in text
+                if (text.includes('{W}') || text.includes('WHITE')) colorIdentity.push('W');
+                if (text.includes('{U}') || text.includes('BLUE')) colorIdentity.push('U');
+                if (text.includes('{B}') || text.includes('BLACK')) colorIdentity.push('B');
+                if (text.includes('{R}') || text.includes('RED')) colorIdentity.push('R');
+                if (text.includes('{G}') || text.includes('GREEN')) colorIdentity.push('G');
+            }
+
+            // Check color indicator if available
+            if (card.color_indicator) {
+                if (card.color_indicator.includes('White')) colorIdentity.push('W');
+                if (card.color_indicator.includes('Blue')) colorIdentity.push('U');
+                if (card.color_indicator.includes('Black')) colorIdentity.push('B');
+                if (card.color_indicator.includes('Red')) colorIdentity.push('R');
+                if (card.color_indicator.includes('Green')) colorIdentity.push('G');
+            }
+
+            // Remove duplicates
+            return [...new Set(colorIdentity)];
+        }
+
+        // Check if a card is within a given color identity
+        function isCardInColorIdentity(card, colorIdentity) {
+            // If no color identity restrictions, all cards are valid
+            if (!colorIdentity || colorIdentity.length === 0) return true;
+
+            // Get the card's color identity
+            const cardColors = getCardColorIdentity(card);
+
+            // If the card has no colors, it's colorless and allowed in any deck
+            if (cardColors.length === 0) return true;
+
+            // Check if all of the card's colors are in the commander's color identity
+            return cardColors.every(color => colorIdentity.includes(color));
+        }
+
+        // Find a random card that matches a color identity
+        function findRandomCardWithColorIdentity(format, colorIdentity) {
+            return new Promise((resolve, reject) => {
+                // Build color identity query
+                let colorQuery = '';
+
+                if (colorIdentity && colorIdentity.length > 0) {
+                    // For colorless decks
+                    if (colorIdentity.length === 0) {
+                        colorQuery = 'colorless';
+                    } else {
+                        // For colored decks, include all colors in identity
+                        colorQuery = colorIdentity.join('');
+                    }
+                }
+
+                // Fetch random card matching format and color identity
+                fetch(`api.php?action=search&query=${format}+${colorQuery}&format=${format}&random=true&limit=1`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.cards && data.cards.length > 0) {
+                            // Verify the card matches color identity
+                            const card = data.cards[0];
+                            if (isCardInColorIdentity(card, colorIdentity)) {
+                                resolve(card);
+                            } else {
+                                // Try again with a more specific query
+                                return findRandomCardWithExactColorIdentity(format, colorIdentity);
+                            }
+                        } else {
+                            // Try with a more generic query
+                            return findRandomCardWithExactColorIdentity(format, colorIdentity);
+                        }
+                    })
+                    .then(card => {
+                        if (card) resolve(card);
+                        else resolve(null);
+                    })
+                    .catch(error => {
+                        console.error('Error finding random card:', error);
+                        resolve(null);
+                    });
+            });
+        }
+
+        // Find a random card with exact color identity match
+        function findRandomCardWithExactColorIdentity(format, colorIdentity) {
+            return new Promise((resolve, reject) => {
+                // For colorless decks
+                if (colorIdentity.length === 0) {
+                    fetch(`api.php?action=search&query=colorless&format=${format}&random=true&limit=1`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.cards && data.cards.length > 0) {
+                                resolve(data.cards[0]);
+                            } else {
+                                resolve(null);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error finding colorless card:', error);
+                            resolve(null);
+                        });
+                    return;
+                }
+
+                // For colored decks, try each color combination
+                const colorQueries = [];
+
+                // Add individual colors
+                colorIdentity.forEach(color => {
+                    colorQueries.push(`color=${color}`);
+                });
+
+                // Try a query
+                function tryNextQuery(index) {
+                    if (index >= colorQueries.length) {
+                        resolve(null);
+                        return;
+                    }
+
+                    fetch(`api.php?action=search&query=${colorQueries[index]}&format=${format}&random=true&limit=1`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.cards && data.cards.length > 0) {
+                                const card = data.cards[0];
+                                if (isCardInColorIdentity(card, colorIdentity)) {
+                                    resolve(card);
+                                } else {
+                                    tryNextQuery(index + 1);
+                                }
+                            } else {
+                                tryNextQuery(index + 1);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error in color query:', error);
+                            tryNextQuery(index + 1);
+                        });
+                }
+
+                // Start trying queries
+                tryNextQuery(0);
+            });
+        }
+
+        // Build a deck with synergistic cards that respect color identity
+        function buildDeckWithSynergies(startingCard, format, deckSize, minSynergy, progressBar, progressStatus) {
+            return new Promise((resolve, reject) => {
+                // Get all cards in the deck so far
+                const deckCards = [...window.deckState.cards];
+                if (window.deckState.commander) {
+                    deckCards.push(window.deckState.commander);
+                }
+
+                // Calculate how many more cards we need
+                const cardsNeeded = deckSize - deckCards.reduce((total, card) => total + card.quantity, 0);
+
+                if (cardsNeeded <= 0) {
+                    resolve(deckCards);
+                    return;
+                }
+
+                // Set up for iterative building
+                let currentProgress = 10; // Start at 10%
+                const progressIncrement = (90 / cardsNeeded); // Remaining 90% divided by cards needed
+
+                // Get commander's color identity if in commander format
+                let colorIdentity = [];
+                if (format === 'commander' && window.deckState.commander) {
+                    colorIdentity = getCardColorIdentity(window.deckState.commander);
+                    progressStatus.textContent = `Building ${format} deck with ${colorIdentity.join('')} color identity...`;
+                }
+
+                // Function to add cards iteratively
+                function addNextCard(cardsAdded) {
+                    if (cardsAdded >= cardsNeeded) {
+                        // We've added enough cards
+                        resolve(window.deckState.cards);
+                        return;
+                    }
+
+                    // Update progress
+                    currentProgress += progressIncrement;
+                    progressBar.style.width = `${Math.min(95, currentProgress)}%`;
+                    progressStatus.textContent = `Adding card ${cardsAdded + 1} of ${cardsNeeded}...`;
+
+                    // Get all cards in the deck so far
+                    const currentDeckCards = [...window.deckState.cards];
+                    if (window.deckState.commander) {
+                        currentDeckCards.push(window.deckState.commander);
+                    }
+
+                    // Find synergies with all cards in the deck
+                    findSynergiesForDeck(currentDeckCards, format, minSynergy)
+                        .then(synergies => {
+                            if (synergies.length === 0) {
+                                // No synergies found, lower the threshold
+                                return findSynergiesForDeck(currentDeckCards, format, minSynergy - 0.1);
+                            }
+                            return synergies;
+                        })
+                        .then(synergies => {
+                            if (synergies.length === 0) {
+                                // Still no synergies, add a random card for this format that matches color identity
+                                return findRandomCardWithColorIdentity(format, colorIdentity)
+                                    .then(randomCard => {
+                                        if (randomCard) {
+                                            addCardToDeck(randomCard);
+                                            return new Promise(resolve => setTimeout(() => resolve(), 100)); // Small delay
+                                        } else {
+                                            throw new Error('Could not find a suitable card matching color identity');
+                                        }
+                                    });
+                            } else {
+                                // Sort by synergy score
+                                synergies.sort((a, b) => b.synergy_score - a.synergy_score);
+
+                                // Filter synergies by color identity if in commander format
+                                if (format === 'commander' && colorIdentity.length > 0) {
+                                    synergies = synergies.filter(synergy => {
+                                        // Get card details to check color identity
+                                        return isCardInColorIdentity(synergy.card, colorIdentity);
+                                    });
+                                }
+
+                                // Check if card is already in deck
+                                let cardToAdd = null;
+                                for (let i = 0; i < synergies.length; i++) {
+                                    const cardExists = currentDeckCards.some(card =>
+                                        card.id === synergies[i].card.id
+                                    );
+
+                                    if (!cardExists) {
+                                        cardToAdd = synergies[i].card;
+                                        break;
+                                    }
+                                }
+
+                                if (!cardToAdd && synergies.length > 0) {
+                                    // All synergy cards are already in deck, just add the first one again
+                                    cardToAdd = synergies[0].card;
+                                }
+
+                                if (cardToAdd) {
+                                    addCardToDeck(cardToAdd);
+                                    return new Promise(resolve => setTimeout(() => resolve(), 100)); // Small delay
+                                } else {
+                                    // No suitable card found, try to find a random card that matches color identity
+                                    return findRandomCardWithColorIdentity(format, colorIdentity)
+                                        .then(randomCard => {
+                                            if (randomCard) {
+                                                addCardToDeck(randomCard);
+                                                return new Promise(resolve => setTimeout(() => resolve(), 100)); // Small delay
+                                            } else {
+                                                throw new Error('Could not find a suitable card matching color identity');
+                                            }
+                                        });
+                                }
+                            }
+                        })
+                        .then(() => {
+                            // Continue with next card
+                            addNextCard(cardsAdded + 1);
+                        })
+                        .catch(error => {
+                            console.error('Error adding card:', error);
+                            // Try to continue anyway
+                            addNextCard(cardsAdded + 1);
+                        });
+                }
+
+                // Start adding cards
+                addNextCard(0);
+            });
+        }
+
+        // Find synergies for all cards in the deck
+        function findSynergiesForDeck(deckCards, format, minSynergy) {
+            return new Promise((resolve, reject) => {
+                // Create an array of promises to fetch synergies for each card
+                const synergiesPromises = deckCards.map(deckCard => {
+                    return fetch(`api.php?action=card&id=${deckCard.id}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) return [];
+
+                            // Filter synergies by minimum score and format
+                            return (data.synergies || [])
+                                .filter(synergy => synergy.synergy_score >= minSynergy)
+                                .map(synergy => ({
+                                    card: {
+                                        id: synergy.synergy_card_id,
+                                        name: synergy.synergy_card_name,
+                                        type_line: synergy.synergy_card_type
+                                    },
+                                    synergy_score: synergy.synergy_score,
+                                    combo_type: synergy.combo_type
+                                }));
+                        })
+                        .catch(error => {
+                            console.error('Error fetching synergies:', error);
+                            return [];
+                        });
+                });
+
+                // Wait for all synergy requests to complete
+                Promise.all(synergiesPromises)
+                    .then(results => {
+                        // Flatten the array of arrays
+                        const allSynergies = [].concat(...results);
+
+                        // Sort by synergy score
+                        allSynergies.sort((a, b) => b.synergy_score - a.synergy_score);
+
+                        resolve(allSynergies);
+                    })
+                    .catch(error => {
+                        console.error('Error finding synergies:', error);
+                        reject(error);
+                    });
+            });
+        }
+
+        // Create animated sparks in the forge
+        function createSparks() {
+            const sparksContainer = document.getElementById('forge-sparks');
+            const sparkCount = 20;
+
+            for (let i = 0; i < sparkCount; i++) {
+                const spark = document.createElement('div');
+                spark.classList.add('spark');
+
+                // Random position within the forge
+                const left = Math.random() * 100;
+                spark.style.left = `${left}%`;
+                spark.style.bottom = '30%';
+
+                // Random horizontal movement
+                const xOffset = (Math.random() - 0.5) * 200;
+                spark.style.setProperty('--x-offset', `${xOffset}px`);
+
+                // Random animation delay
+                const delay = Math.random() * 2;
+                spark.style.animationDelay = `${delay}s`;
+
+                sparksContainer.appendChild(spark);
+            }
+
+            // Add click event to create more sparks on demand
+            document.querySelector('.forge').addEventListener('click', function (e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                createSparkBurst(x, y);
+            });
+        }
+
+        // Create a burst of sparks at a specific position
+        function createSparkBurst(x, y) {
+            const sparksContainer = document.getElementById('forge-sparks');
+            const burstCount = 10;
+
+            for (let i = 0; i < burstCount; i++) {
+                const spark = document.createElement('div');
+                spark.classList.add('spark');
+
+                // Position at click point
+                spark.style.left = `${x}px`;
+                spark.style.top = `${y}px`;
+
+                // Random movement direction
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 50 + Math.random() * 100;
+                const xOffset = Math.cos(angle) * distance;
+                const yOffset = Math.sin(angle) * distance;
+
+                // Custom animation for burst sparks
+                spark.style.animation = 'none';
+                spark.style.opacity = '1';
+                spark.style.transition = 'all 1s ease-out';
+
+                // Trigger animation
+                setTimeout(() => {
+                    spark.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+                    spark.style.opacity = '0';
+                }, 10);
+
+                sparksContainer.appendChild(spark);
+
+                // Remove spark after animation
+                setTimeout(() => {
+                    sparksContainer.removeChild(spark);
+                }, 1000);
+            }
+        }
+
+        // Initialize format buttons
+        function initFormatButtons() {
+            const formatButtons = document.querySelectorAll('.format-btn');
+
+            formatButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    // Remove active class from all buttons
+                    formatButtons.forEach(btn => btn.classList.remove('active'));
+
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    // Get selected format
+                    const format = this.dataset.format;
+
+                    // Update deck format display
+                    document.getElementById('deck-format').textContent = format.charAt(0).toUpperCase() + format.slice(1);
+
+                    // Load cards for this format
+                    loadFormatCards(format);
+                });
+            });
+        }
+
+        // Load cards for a specific format from API
+        function loadFormatCards(format) {
+            // Show loading animation
+            document.getElementById('loading').classList.remove('hidden');
+
+            // Prepare query based on format
+            let query = format;
+
+            // For commander, we want to focus on legendary creatures
+            if (format === 'commander') {
+                query = 'legendary creature';
+            }
+
+            // Use the API to search for cards
+            fetch(`api.php?action=search&query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    // Get card grid
+                    const cardGrid = document.getElementById('card-grid');
+
+                    // Clear existing cards
+                    cardGrid.innerHTML = '';
+
+                    // Hide card grid during loading
+                    cardGrid.classList.remove('visible');
+
+                    // Get a random selection of 10 cards from the results
+                    let cards = data.cards;
+                    if (cards.length > 10) {
+                        // Shuffle array and take first 10
+                        cards = shuffleArray(cards).slice(0, 10);
+                    }
+
+                    // Create card elements
+                    cards.forEach(card => {
+                        const cardContainer = createCardElement(card);
+                        cardGrid.appendChild(cardContainer);
+                    });
+
+                    // Hide loading and show cards with slight delay for animation
+                    setTimeout(() => {
+                        document.getElementById('loading').classList.add('hidden');
+                        cardGrid.classList.add('visible');
+                    }, 300);
+                })
+                .catch(error => {
+                    console.error('Error loading cards:', error);
+                    document.getElementById('loading').classList.add('hidden');
+                    showNotification('Failed to load cards. Please try again.', 'error');
+                });
+        }
+
+        // Add keyboard event listener for toast navigation
+        document.addEventListener('keydown', function (event) {
+            // Close toast with Escape key
+            if (event.key === 'Escape') {
+                hideCardToast();
+            }
+        });
+
+        // Add click outside to dismiss toast
+        document.addEventListener('click', function (event) {
+            const toast = document.getElementById('card-toast');
+
+            // If toast is visible and click is outside the toast
+            if (!toast.classList.contains('hidden') && !toast.contains(event.target)) {
+                // Check if the click was on a card (don't dismiss if clicking on a card)
+                const clickedCard = event.target.closest('.card');
+                if (!clickedCard) {
+                    hideCardToast();
+                }
+            }
+        });
+
+        // Update the card creation function to use the toast
+        function createCardElement(card) {
+            // Create card container
+            const cardContainer = document.createElement('div');
+            cardContainer.className = 'card-container';
+
+            // Create card element
+            const cardElement = document.createElement('div');
+            cardElement.className = 'card';
+            cardElement.dataset.cardId = card.id;
+            cardElement.dataset.cardName = card.name;
+
+            // Create card image - use Scryfall API for images
+            const cardImage = document.createElement('img');
+            cardImage.className = 'card-image';
+            cardImage.src = `https://api.scryfall.com/cards/named?format=image&exact=${encodeURIComponent(card.name)}`;
+            cardImage.alt = card.name;
+            cardImage.loading = 'lazy';
+
+            // Handle image loading error
+            cardImage.onerror = function () {
+                this.src = 'https://c1.scryfall.com/file/scryfall-card-backs/large/59/597b79b3-7d77-4261-871a-60dd17403388.jpg';
+            };
+
+            // Create card overlay
+            const cardOverlay = document.createElement('div');
+            cardOverlay.className = 'card-overlay';
+
+            // Card name
+            const cardName = document.createElement('div');
+            cardName.className = 'card-name';
+            cardName.textContent = card.name;
+
+            // Card type
+            const cardType = document.createElement('div');
+            cardType.className = 'card-type';
+            cardType.textContent = card.type_line || 'Unknown Type';
+
+            // Card actions
+            const cardActions = document.createElement('div');
+            cardActions.className = 'card-actions';
+
+            // Add to deck button
+            const addButton = document.createElement('button');
+            addButton.className = 'card-btn';
+            addButton.textContent = 'Add to Deck';
+            addButton.addEventListener('click', function (e) {
+                e.stopPropagation(); // Prevent card click
+                addCardToDeck(card);
+            });
+
+            // Scryfall link button
+            const scryfallButton = document.createElement('button');
+            scryfallButton.className = 'card-btn';
+            scryfallButton.textContent = 'Scryfall';
+            scryfallButton.addEventListener('click', function (e) {
+                e.stopPropagation(); // Prevent card click
+                window.open(`https://scryfall.com/search?q=${encodeURIComponent(card.name)}`, '_blank');
+            });
+
+            // Assemble card
+            cardActions.appendChild(addButton);
+            cardActions.appendChild(scryfallButton);
+
+            cardOverlay.appendChild(cardName);
+            cardOverlay.appendChild(cardType);
+            cardOverlay.appendChild(cardActions);
+
+            cardElement.appendChild(cardImage);
+            cardElement.appendChild(cardOverlay);
+
+            // Add click event to show card toast
+            cardElement.addEventListener('click', function () {
+                // Toggle selection
+                this.classList.toggle('selected');
+
+                // Show enhanced toast
+                showCardToast(card);
+            });
+
+            cardContainer.appendChild(cardElement);
+
+            return cardContainer;
+        }
+
+        function initDeckBuilder() {
+            // Set up deck state
+            window.deckState = {
+                cards: [],
+                format: null,
+                commander: null
+            };
+
+            // Set up event listeners for deck buttons
+            document.getElementById('analyze-deck').addEventListener('click', analyzeDeck);
+            document.getElementById('auto-build-deck').addEventListener('click', showAutoBuildModal);
+            document.getElementById('save-deck').addEventListener('click', saveDeck);
+            document.getElementById('clear-deck').addEventListener('click', clearDeck);
+
+            // Initialize auto-build functionality
+            initAutoBuildDeck();
+        }
+
+        // Show the auto-build modal
+        function showAutoBuildModal() {
+            document.getElementById('auto-build-modal').style.display = 'block';
+        }
+
+        // Toggle card selection
+        function toggleCardSelection(cardElement, card) {
+            // Toggle selected class
+            cardElement.classList.toggle('selected');
+
+            // If this is a commander format, set as commander
+            const format = document.querySelector('.format-btn.active')?.dataset.format;
+            if ((format === 'commander') && cardElement.classList.contains('selected')) {
+                // Check if card can be a commander (legendary creature or has "can be your commander" text)
+                if (card.type_line && (card.type_line.includes('Legendary Creature') ||
+                    (card.oracle_text && card.oracle_text.includes('can be your commander')))) {
+                    // Remove selected class from all other cards
+                    document.querySelectorAll('.card.selected').forEach(card => {
+                        if (card !== cardElement) {
+                            card.classList.remove('selected');
+                        }
+                    });
+
+                    // Set as commander
+                    window.deckState.commander = card;
+
+                    // Update deck display
+                    updateDeckDisplay();
+
+                    // Show notification
+                    showNotification(`${card.name} set as your commander!`);
+                } else {
+                    // Not a valid commander
+                    cardElement.classList.remove('selected');
+                    showNotification('This card cannot be your commander. Choose a legendary creature.', 'error');
+                }
+            }
+        }
+
+        // Show synergies for a selected card
+        function showCardSynergies(cardId) {
+            // Show loading indicator
+            const synergyInfo = document.getElementById('synergy-info');
+            synergyInfo.innerHTML = '<p>Loading synergies...</p>';
+
+            // Fetch synergies from API
+            fetch(`api.php?action=card&id=${cardId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    // Display synergies
+                    displaySynergies(data.card, data.synergies);
+                })
+                .catch(error => {
+                    console.error('Error loading synergies:', error);
+                    synergyInfo.innerHTML = '<p>Failed to load synergies. Please try again.</p>';
+                });
+        }
+
+        // Display synergies for a card
+        function displaySynergies(card, synergies) {
+            const synergyInfo = document.getElementById('synergy-info');
+            synergyInfo.innerHTML = '';
+
+            // Create header
+            const header = document.createElement('h3');
+            header.textContent = `Synergies for ${card.name}`;
+            synergyInfo.appendChild(header);
+
+            // If no synergies found
+            if (synergies.length === 0) {
+                const noSynergies = document.createElement('p');
+                noSynergies.textContent = 'No synergies found for this card.';
+                synergyInfo.appendChild(noSynergies);
+                return;
+            }
+
+            // Create synergy list
+            const synergyList = document.createElement('div');
+            synergyList.className = 'synergy-list';
+
+            // Add top synergies
+            synergies.slice(0, 5).forEach(synergy => {
+                const synergyItem = document.createElement('div');
+                synergyItem.className = 'synergy-item';
+
+                // Synergy card name
+                const synergyCard = document.createElement('div');
+                synergyCard.className = 'synergy-card';
+                synergyCard.textContent = synergy.synergy_card_name;
+
+                // Synergy score
+                const synergyScore = document.createElement('div');
+                synergyScore.className = 'synergy-score';
+                synergyScore.textContent = (synergy.synergy_score * 100).toFixed(0) + '%';
+
+                // Combo type if available
+                if (synergy.combo_type) {
+                    const comboType = document.createElement('div');
+                    comboType.className = 'combo-type';
+                    comboType.textContent = synergy.combo_type.replace(/_/g, ' ');
+                    synergyItem.appendChild(comboType);
+                }
+
+                // Add to synergy item
+                synergyItem.appendChild(synergyCard);
+                synergyItem.appendChild(synergyScore);
+
+                // Add click event to add card to deck
+                synergyItem.addEventListener('click', function () {
+                    // Find this card in the grid or fetch it
+                    fetch(`api.php?action=card&id=${synergy.synergy_card_id}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.card) {
+                                addCardToDeck(data.card);
+                                showNotification(`Added ${data.card.name} to deck`);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                });
+
+                synergyList.appendChild(synergyItem);
+            });
+
+            synergyInfo.appendChild(synergyList);
+
+            // Add "View All" button if there are more synergies
+            if (synergies.length > 5) {
+                const viewAllBtn = document.createElement('button');
+                viewAllBtn.className = 'view-all-btn';
+                viewAllBtn.textContent = 'View All Synergies';
+                viewAllBtn.addEventListener('click', function () {
+                    displayAllSynergies(card, synergies);
+                });
+                synergyInfo.appendChild(viewAllBtn);
+            }
+        }
+
+        // Display all synergies in a modal
+        function displayAllSynergies(card, synergies) {
+            // Create modal container
+            const modal = document.createElement('div');
+            modal.className = 'synergy-modal';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+            modal.style.zIndex = '1000';
+            modal.style.display = 'flex';
+            modal.style.justifyContent = 'center';
+            modal.style.alignItems = 'center';
+
+            // Create modal content
+            const modalContent = document.createElement('div');
+            modalContent.style.backgroundColor = 'var(--forge-dark)';
+            modalContent.style.padding = '30px';
+            modalContent.style.borderRadius = '10px';
+            modalContent.style.maxWidth = '800px';
+            modalContent.style.maxHeight = '80vh';
+            modalContent.style.overflow = 'auto';
+            modalContent.style.position = 'relative';
+
+            // Close button
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = '×';
+            closeBtn.style.position = 'absolute';
+            closeBtn.style.top = '10px';
+            closeBtn.style.right = '10px';
+            closeBtn.style.background = 'none';
+            closeBtn.style.border = 'none';
+            closeBtn.style.color = 'var(--forge-light)';
+            closeBtn.style.fontSize = '24px';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.addEventListener('click', () => document.body.removeChild(modal));
+
+            // Header
+            const header = document.createElement('h3');
+            header.textContent = `All Synergies for ${card.name}`;
+            header.style.marginBottom = '20px';
+
+            // Synergy list
+            const synergyList = document.createElement('div');
+            synergyList.className = 'synergy-list';
+            synergyList.style.display = 'flex';
+            synergyList.style.flexDirection = 'column';
+            synergyList.style.gap = '10px';
+
+            // Add all synergies
+            synergies.forEach(synergy => {
+                const synergyItem = document.createElement('div');
+                synergyItem.className = 'synergy-item';
+                synergyItem.style.display = 'flex';
+                synergyItem.style.justifyContent = 'space-between';
+                synergyItem.style.padding = '10px';
+                synergyItem.style.backgroundColor = 'rgba(26,26,26,0.8)';
+                synergyItem.style.borderRadius = '5px';
+                synergyItem.style.cursor = 'pointer';
+
+                // Synergy card name
+                const synergyCard = document.createElement('div');
+                synergyCard.textContent = synergy.synergy_card_name;
+
+                // Synergy score
+                const synergyScore = document.createElement('div');
+                synergyScore.textContent = (synergy.synergy_score * 100).toFixed(0) + '%';
+
+                // Add to synergy item
+                synergyItem.appendChild(synergyCard);
+                synergyItem.appendChild(synergyScore);
+
+                // Add click event to add card to deck
+                synergyItem.addEventListener('click', function () {
+                    fetch(`api.php?action=card&id=${synergy.synergy_card_id}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.card) {
+                                addCardToDeck(data.card);
+                                showNotification(`Added ${data.card.name} to deck`);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                });
+
+                synergyList.appendChild(synergyItem);
+            });
+
+            // Assemble modal
+            modalContent.appendChild(closeBtn);
+            modalContent.appendChild(header);
+            modalContent.appendChild(synergyList);
+            modal.appendChild(modalContent);
+
+            // Add to body
+            document.body.appendChild(modal);
+
+            // Close on click outside
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+
+        // Add card to deck
+        function addCardToDeck(card) {
+            // Check if card is already in deck
+            const existingCard = window.deckState.cards.find(c => c.id === card.id);
+
+            // Check color identity if in commander format
+            const format = document.querySelector('.format-btn.active')?.dataset.format;
+            if (format === 'commander' && window.deckState.commander) {
+                const commanderColors = getCardColorIdentity(window.deckState.commander);
+                if (!isCardInColorIdentity(card, commanderColors)) {
+                    showNotification(`${card.name} is not in your commander's color identity!`, 'error');
+                    return false;
+                }
+            }
+
+            if (existingCard) {
+                // Increment quantity
+                existingCard.quantity++;
+            } else {
+                // Add new card
+                window.deckState.cards.push({
+                    ...card,
+                    quantity: 1
+                });
+            }
+
+            // Update deck display
+            updateDeckDisplay();
+
+            // Show notification
+            showNotification(`Added ${card.name} to your deck`);
+
+            return true;
+        }
+
+        // Update deck display
+        function updateDeckDisplay() {
+            const deckContainer = document.getElementById('deck-cards');
+            const cardCount = document.getElementById('card-count');
+            const avgCmc = document.getElementById('avg-cmc');
+            const deckFormat = document.getElementById('deck-format');
+
+            // Clear deck container
+            deckContainer.innerHTML = '';
+
+            // Calculate total cards
+            let totalCards = window.deckState.cards.reduce((sum, card) => sum + card.quantity, 0);
+
+            // Get color identity if commander exists
+            let colorIdentity = [];
+            if (window.deckState.commander) {
+                totalCards += 1;
+                colorIdentity = getCardColorIdentity(window.deckState.commander);
+
+                // Create commander element
+                const commanderElement = document.createElement('div');
+                commanderElement.className = 'deck-card commander';
+
+                // Commander image
+                const commanderImg = document.createElement('img');
+                commanderImg.className = 'deck-card-img';
+                commanderImg.src = `https://api.scryfall.com/cards/named?format=image&exact=${encodeURIComponent(window.deckState.commander.name)}`;
+                commanderImg.alt = window.deckState.commander.name;
+
+                // Commander info
+                const commanderInfo = document.createElement('div');
+                commanderInfo.className = 'deck-card-info';
+
+                const commanderName = document.createElement('div');
+                commanderName.className = 'deck-card-name';
+                commanderName.textContent = window.deckState.commander.name + ' (Commander)';
+
+                const commanderType = document.createElement('div');
+                commanderType.className = 'deck-card-type';
+                commanderType.textContent = window.deckState.commander.type_line || 'Commander';
+
+                // Color identity display
+                const commanderColors = document.createElement('div');
+                commanderColors.className = 'deck-card-colors';
+                commanderColors.innerHTML = colorIdentity.length > 0 ?
+                    `<span class="color-identity">Color Identity: ${colorIdentity.join('')}</span>` :
+                    '<span class="color-identity">Colorless</span>';
+
+                // Remove button
+                const removeButton = document.createElement('button');
+                removeButton.className = 'remove-card';
+                removeButton.innerHTML = '×';
+                removeButton.addEventListener('click', function () {
+                    removeCommander();
+                });
+
+                // Assemble commander element
+                commanderInfo.appendChild(commanderName);
+                commanderInfo.appendChild(commanderType);
+                commanderInfo.appendChild(commanderColors);
+
+                commanderElement.appendChild(commanderImg);
+                commanderElement.appendChild(commanderInfo);
+                commanderElement.appendChild(removeButton);
+
+                deckContainer.appendChild(commanderElement);
+            }
+
+            // Add regular cards
+            if (window.deckState.cards.length > 0) {
+                // Sort cards by name
+                const sortedCards = [...window.deckState.cards].sort((a, b) => a.name.localeCompare(b.name));
+
+                sortedCards.forEach(card => {
+                    // Check if card is in commander's color identity
+                    let isValidCard = true;
+                    if (window.deckState.commander && colorIdentity.length > 0) {
+                        isValidCard = isCardInColorIdentity(card, colorIdentity);
+                    }
+
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'deck-card' + (isValidCard ? '' : ' invalid-color');
+
+                    // Card image
+                    const cardImg = document.createElement('img');
+                    cardImg.className = 'deck-card-img';
+                    cardImg.src = `https://api.scryfall.com/cards/named?format=image&exact=${encodeURIComponent(card.name)}`;
+                    cardImg.alt = card.name;
+
+                    // Card info
+                    const cardInfo = document.createElement('div');
+                    cardInfo.className = 'deck-card-info';
+
+                    const cardName = document.createElement('div');
+                    cardName.className = 'deck-card-name';
+                    cardName.textContent = `${card.name} ${card.quantity > 1 ? `(${card.quantity})` : ''}`;
+
+                    const cardType = document.createElement('div');
+                    cardType.className = 'deck-card-type';
+                    cardType.textContent = card.type_line || 'Unknown Type';
+
+                    // Add warning for invalid color identity
+                    if (!isValidCard) {
+                        const colorWarning = document.createElement('div');
+                        colorWarning.className = 'color-warning';
+                        colorWarning.textContent = 'Not in commander\'s color identity!';
+                        cardInfo.appendChild(colorWarning);
+                    }
+
+                    // Remove button
+                    const removeButton = document.createElement('button');
+                    removeButton.className = 'remove-card';
+                    removeButton.innerHTML = '×';
+                    removeButton.addEventListener('click', function () {
+                        removeCardFromDeck(card.id);
+                    });
+
+                    // Assemble card element
+                    cardInfo.appendChild(cardName);
+                    cardInfo.appendChild(cardType);
+
+                    cardElement.appendChild(cardImg);
+                    cardElement.appendChild(cardInfo);
+                    cardElement.appendChild(removeButton);
+
+                    deckContainer.appendChild(cardElement);
+                });
+            } else if (!window.deckState.commander) {
+                // Empty deck message
+                const emptyMessage = document.createElement('p');
+                emptyMessage.textContent = 'Your deck is empty. Add cards from above.';
+                deckContainer.appendChild(emptyMessage);
+            }
+
+            // Update stats
+            cardCount.textContent = totalCards;
+
+            // Calculate average CMC
+            let totalCmc = window.deckState.cards.reduce((sum, card) => sum + (card.cmc || 0) * card.quantity, 0);
+            if (window.deckState.commander) {
+                totalCmc += (window.deckState.commander.cmc || 0);
+            }
+
+            const averageCmc = totalCards > 0 ? totalCmc / totalCards : 0;
+            avgCmc.textContent = averageCmc.toFixed(2);
+
+            // Update format
+            const format = document.querySelector('.format-btn.active')?.dataset.format || 'unknown';
+            deckFormat.textContent = format.charAt(0).toUpperCase() + format.slice(1);
+        }
+
+        // Remove card from deck
+        function removeCardFromDeck(cardId) {
+            const cardIndex = window.deckState.cards.findIndex(card => card.id === cardId);
+
+            if (cardIndex !== -1) {
+                const card = window.deckState.cards[cardIndex];
+
+                // Decrease quantity or remove card
+                if (card.quantity > 1) {
+                    card.quantity--;
+                } else {
+                    window.deckState.cards.splice(cardIndex, 1);
+                }
+
+                // Update deck display
+                updateDeckDisplay();
+
+                // Show notification
+                showNotification(`Removed ${card.name} from your deck`);
+            }
+        }
+
+        // Remove commander
+        function removeCommander() {
+            if (window.deckState.commander) {
+                const commanderName = window.deckState.commander.name;
+                window.deckState.commander = null;
+
+                // Update deck display
+                updateDeckDisplay();
+
+                // Show notification
+                showNotification(`Removed ${commanderName} as commander`);
+
+                // Deselect commander card if it's in the grid
+                document.querySelectorAll('.card.selected').forEach(card => {
+                    card.classList.remove('selected');
+                });
+            }
+        }
+
+        // Analyze the current deck using the API
+        function analyzeDeck() {
+            // Check if deck has cards
+            if (window.deckState.cards.length === 0 && !window.deckState.commander) {
+                showNotification('Add cards to your deck first', 'error');
+                return;
+            }
+
+            // Show loading
+            const synergyInfo = document.getElementById('synergy-info');
+            synergyInfo.innerHTML = '<p>Analyzing deck...</p>';
+
+            // Prepare deck data
+            const deckCards = window.deckState.cards.map(card => card.name);
+            if (window.deckState.commander) {
+                deckCards.unshift(window.deckState.commander.name);
+            }
+
+            // Call API to analyze the deck
+            fetch('api.php?action=analyze_deck', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ deck: deckCards })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    // Display analysis results
+                    displayDeckAnalysis(data);
+                })
+                .catch(error => {
+                    console.error('Error analyzing deck:', error);
+                    synergyInfo.innerHTML = '<p>Failed to analyze deck. Please try again.</p>';
+                    showNotification('Error analyzing deck', 'error');
+                });
+        }
+
+        // Enhanced deck analysis display
+        function displayDeckAnalysis(analysis) {
+            const synergyInfo = document.getElementById('synergy-info');
+            synergyInfo.innerHTML = '';
+
+            // Create header
+            const header = document.createElement('h3');
+            header.textContent = 'Deck Analysis';
+            synergyInfo.appendChild(header);
+
+            // Create tabs for different analysis views
+            const analysisTabs = document.createElement('div');
+            analysisTabs.className = 'analysis-tabs';
+
+            const overviewTab = document.createElement('button');
+            overviewTab.className = 'analysis-tab active';
+            overviewTab.textContent = 'Overview';
+            overviewTab.addEventListener('click', () => switchAnalysisTab(analysisTabs, analysisContent, 'overview'));
+
+            const synergiesTab = document.createElement('button');
+            synergiesTab.className = 'analysis-tab';
+            synergiesTab.textContent = 'Synergies';
+            synergiesTab.addEventListener('click', () => switchAnalysisTab(analysisTabs, analysisContent, 'synergies'));
+
+            const suggestionsTab = document.createElement('button');
+            suggestionsTab.className = 'analysis-tab';
+            suggestionsTab.textContent = 'Suggestions';
+            suggestionsTab.addEventListener('click', () => switchAnalysisTab(analysisTabs, analysisContent, 'suggestions'));
+
+            analysisTabs.appendChild(overviewTab);
+            analysisTabs.appendChild(synergiesTab);
+            analysisTabs.appendChild(suggestionsTab);
+
+            synergyInfo.appendChild(analysisTabs);
+
+            // Create tab content container
+            const analysisContent = document.createElement('div');
+            analysisContent.className = 'analysis-tab-content';
+
+            // Overview content
+            const overviewContent = document.createElement('div');
+            overviewContent.className = 'tab-pane active';
+            overviewContent.dataset.tab = 'overview';
+
+            // Overall synergy score
+            const overallScore = document.createElement('div');
+            overallScore.className = 'synergy-score';
+            overallScore.innerHTML = `
+        <span>Overall Synergy Score:</span>
+        <span class="score">${(analysis.average_synergy * 100).toFixed(1)}%</span>
+    `;
+            overviewContent.appendChild(overallScore);
+
+            // Deck stats
+            const deckStats = document.createElement('div');
+            deckStats.className = 'deck-analysis-stats';
+            deckStats.innerHTML = `
+        <div class="stat-item">
+            <span class="stat-label">Cards Analyzed:</span>
+            <span class="stat-value">${analysis.cards_found}</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Synergy Pairs:</span>
+            <span class="stat-value">${analysis.synergy_count}</span>
+        </div>
+    `;
+
+            // Cards not found warning if any
+            if (analysis.cards_not_found && analysis.cards_not_found.length > 0) {
+                const notFoundWarning = document.createElement('div');
+                notFoundWarning.className = 'not-found-warning';
+                notFoundWarning.innerHTML = `
+            <p>Warning: ${analysis.cards_not_found.length} cards were not found in the database:</p>
+            <ul>
+                ${analysis.cards_not_found.map(card => `<li>${card}</li>`).join('')}
+            </ul>
+        `;
+                deckStats.appendChild(notFoundWarning);
+            }
+
+            overviewContent.appendChild(deckStats);
+
+            // Combo types summary
+            if (analysis.combo_types && Object.keys(analysis.combo_types).length > 0) {
+                const comboSummary = document.createElement('div');
+                comboSummary.className = 'combo-summary';
+                comboSummary.innerHTML = `<h4>Combo Potential</h4>`;
+
+                const comboList = document.createElement('div');
+                comboList.className = 'combo-type-list';
+
+                Object.entries(analysis.combo_types)
+                    .sort((a, b) => b[1] - a[1])
+                    .forEach(([comboType, count]) => {
+                        const comboItem = document.createElement('div');
+                        comboItem.className = 'combo-type-item';
+                        comboItem.innerHTML = `
+                    <div class="combo-type-name">${comboType.replace(/_/g, ' ')}</div>
+                    <div class="combo-type-count">${count}</div>
+                `;
+                        comboList.appendChild(comboItem);
+                    });
+
+                comboSummary.appendChild(comboList);
+                overviewContent.appendChild(comboSummary);
+            }
+
+            // Synergies content
+            const synergiesContent = document.createElement('div');
+            synergiesContent.className = 'tab-pane';
+            synergiesContent.dataset.tab = 'synergies';
+
+            // Top synergy pairs
+            if (analysis.top_synergies && analysis.top_synergies.length > 0) {
+                const pairsHeader = document.createElement('h4');
+                pairsHeader.textContent = 'Top Synergy Pairs';
+                synergiesContent.appendChild(pairsHeader);
+
+                const pairsList = document.createElement('div');
+                pairsList.className = 'synergy-pairs-list';
+
+                analysis.top_synergies.forEach(pair => {
+                    const pairItem = document.createElement('div');
+                    pairItem.className = 'synergy-pair-item';
+
+                    // Determine synergy class based on score
+                    const scoreValue = pair.synergy_score * 100;
+                    let scoreClass = 'low-synergy';
+                    if (scoreValue >= 90) scoreClass = 'very-high-synergy';
+                    else if (scoreValue >= 80) scoreClass = 'high-synergy';
+                    else if (scoreValue >= 70) scoreClass = 'medium-synergy';
+
+                    pairItem.innerHTML = `
+                <div class="pair-cards">
+                    <span class="pair-card">${pair.card1_name}</span>
+                    <span class="pair-plus">+</span>
+                    <span class="pair-card">${pair.card2_name}</span>
+                </div>
+                <div class="pair-details">
+                    <span class="pair-score ${scoreClass}">${(pair.synergy_score * 100).toFixed(1)}%</span>
+                    ${pair.combo_type ? `<span class="pair-combo-type">${pair.combo_type.replace(/_/g, ' ')}</span>` : ''}
+                </div>
+            `;
+
+                    pairsList.appendChild(pairItem);
+                });
+
+                synergiesContent.appendChild(pairsList);
+            } else {
+                synergiesContent.innerHTML = '<p>No significant synergies found between cards in your deck.</p>';
+            }
+
+            // Suggestions content
+            const suggestionsContent = document.createElement('div');
+            suggestionsContent.className = 'tab-pane';
+            suggestionsContent.dataset.tab = 'suggestions';
+
+            // Suggested cards
+            if (analysis.suggestions && analysis.suggestions.length > 0) {
+                const suggestionsHeader = document.createElement('h4');
+                suggestionsHeader.textContent = 'Recommended Cards for Your Deck';
+                suggestionsContent.appendChild(suggestionsHeader);
+
+                const suggestionsList = document.createElement('div');
+                suggestionsList.className = 'suggestions-list';
+
+                analysis.suggestions.forEach(suggestion => {
+                    const suggestionItem = document.createElement('div');
+                    suggestionItem.className = 'suggestion-item';
+
+                    // Get synergy with cards
+                    const synergyWith = Object.entries(suggestion.synergy_with)
+                        .sort((a, b) => b[1] - a[1])
+                        .slice(0, 3)
+                        .map(([card, score]) => `<span class="synergy-with-card">${card} <span class="synergy-with-score">(${(score * 100).toFixed(0)}%)</span></span>`)
+                        .join(', ');
+
+                    // Get unique combo types
+                    const comboTypes = suggestion.combo_types ? [...new Set(suggestion.combo_types)] : [];
+
+                    suggestionItem.innerHTML = `
+                <div class="suggestion-header">
+                    <div class="suggestion-name">${suggestion.name}</div>
+                    <div class="suggestion-type">${suggestion.type_line || ''}</div>
+                </div>
+                <div class="suggestion-synergy-with">
+                    <span class="synergy-with-label">Synergizes with:</span> ${synergyWith}
+                </div>
+                ${comboTypes.length > 0 ? `
+                <div class="suggestion-combos">
+                    <span class="combos-label">Combo potential:</span>
+                    ${comboTypes.map(type => `<span class="suggestion-combo-type">${type.replace(/_/g, ' ')}</span>`).join(' ')}
+                </div>
+                ` : ''}
+            `;
+
+                    // Add button to add to deck
+                    const addButton = document.createElement('button');
+                    addButton.className = 'add-suggestion';
+                    addButton.textContent = 'Add to Deck';
+                    addButton.addEventListener('click', function () {
+                        addCardToDeck({
+                            id: suggestion.id,
+                            name: suggestion.name,
+                            type_line: suggestion.type_line
+                        });
+                    });
+
+                    suggestionItem.appendChild(addButton);
+                    suggestionsList.appendChild(suggestionItem);
+                });
+
+                suggestionsContent.appendChild(suggestionsList);
+            } else {
+                suggestionsContent.innerHTML = '<p>No card suggestions available for your deck.</p>';
+            }
+
+            // Add all content to tab container
+            analysisContent.appendChild(overviewContent);
+            analysisContent.appendChild(synergiesContent);
+            analysisContent.appendChild(suggestionsContent);
+
+            synergyInfo.appendChild(analysisContent);
+        }
+
+        // Function to switch between analysis tabs
+        function switchAnalysisTab(tabsContainer, contentContainer, tabName) {
+            // Update active tab
+            const tabs = tabsContainer.querySelectorAll('.analysis-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabsContainer.querySelector(`.analysis-tab:nth-child(${tabName === 'overview' ? 1 : tabName === 'synergies' ? 2 : 3})`).classList.add('active');
+
+            // Update active content
+            const contents = contentContainer.querySelectorAll('.tab-pane');
+            contents.forEach(content => content.classList.remove('active'));
+            contentContainer.querySelector(`.tab-pane[data-tab="${tabName}"]`).classList.add('active');
+        }
+
+        // Save deck
+        function saveDeck() {
+            // Check if deck has cards
+            if (window.deckState.cards.length === 0 && !window.deckState.commander) {
+                showNotification('Cannot save an empty deck', 'error');
+                return;
+            }
+
+            // Get deck name from user
+            const deckName = prompt('Enter a name for your deck:');
+
+            if (!deckName) return; // User cancelled
+
+            // Get current format
+            const format = document.querySelector('.format-btn.active')?.dataset.format || 'unknown';
+
+            // Create deck object
+            const deck = {
+                name: deckName,
+                format: format,
+                commander: window.deckState.commander,
+                cards: [...window.deckState.cards],
+                created: new Date().toISOString()
+            };
+
+            // Get existing saved decks
+            let savedDecks = JSON.parse(localStorage.getItem('forgeDecks') || '[]');
+
+            // Add new deck
+            savedDecks.push(deck);
+
+            // Save to localStorage
+            localStorage.setItem('forgeDecks', JSON.stringify(savedDecks));
+
+            // Show notification
+            showNotification(`Deck "${deckName}" saved successfully!`);
+        }
+
+        // Clear deck
+        function clearDeck() {
+            // Check if deck has cards
+            if (window.deckState.cards.length === 0 && !window.deckState.commander) {
+                showNotification('Deck is already empty');
+                return;
+            }
+
+            // Confirm clear
+            if (confirm('Are you sure you want to clear your deck?')) {
+                // Clear deck state
+                window.deckState.cards = [];
+                window.deckState.commander = null;
+
+                // Update deck display
+                updateDeckDisplay();
+
+                // Deselect all cards
+                document.querySelectorAll('.card.selected').forEach(card => {
+                    card.classList.remove('selected');
+                });
+
+                // Show notification
+                showNotification('Deck cleared');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+
+            // Add to container
+            const container = document.getElementById('notification-container');
+            container.appendChild(notification);
+
+            // Remove after delay
+            setTimeout(() => {
+                notification.classList.add('fade-out');
+                setTimeout(() => {
+                    container.removeChild(notification);
+                }, 500);
+            }, 3000);
+        }
+
+        // Helper function to shuffle an array
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+    </script>
+</body>
+
+</html>

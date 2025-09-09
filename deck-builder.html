@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTG Budget Deck Builder</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- This will use your existing style.css -->
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>MTG Budget Deck Builder</h1>
+            <div class="header-actions">
+                <button id="import-csv" class="primary-button">Import Collection (CSV)</button>
+                <input type="file" id="csv-file" accept=".csv" style="display: none;">
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="collection-section">
+                    <h2>Your Collection</h2>
+                    <div class="collection-stats">
+                        <div class="stat">
+                            <span class="stat-label">Cards:</span>
+                            <span class="stat-value" id="collection-count">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Value:</span>
+                            <span class="stat-value">$<span id="collection-value">0.00</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="search-box">
+                        <input type="text" id="card-search" placeholder="Search cards...">
+                    </div>
+                    
+                    <div class="collection-cards" id="collection-cards">
+                        <p class="empty-message">No cards in your collection. Import a CSV file to get started.</p>
+                    </div>
+                </div>
+                
+                <div class="saved-decks-section">
+                    <h2>Saved Decks</h2>
+                    <div id="saved-decks">
+                        <p class="empty-message">No saved decks</p>
+                    </div>
+                </div>
+            </div>
+            
+                <div class="deck-builder">
+                <div class="deck-controls">
+                    <h2>Deck Builder</h2>
+                    
+                    <div class="deck-settings">
+                        <div class="setting">
+                            <label for="format-select">Format:</label>
+                            <select id="format-select">
+                                <option value="commander">Commander</option>
+                                <option value="standard">Standard</option>
+                                <option value="modern">Modern</option>
+                                <option value="pioneer">Pioneer</option>
+                                <option value="brawl">Brawl</option>
+                                <option value="limited">Limited</option>
+                            </select>
+                        </div>
+                        
+                        <div class="setting">
+                            <label for="budget-input">Budget ($):</label>
+                            <input type="number" id="budget-input" value="100" min="1" step="0.01">
+                        </div>
+                        
+                        <div class="setting">
+                            <label>Deck Size:</label>
+                            <span id="deck-size">100</span>
+                        </div>
+                    </div>
+                    
+                    <div class="deck-actions">
+                        <button id="generate-deck" class="primary-button">Generate Deck</button>
+                        <button id="save-deck">Save Deck</button>
+                        <button id="clear-deck">Clear Deck</button>
+                        <button id="export-deck">Export Deck</button>
+                    </div>
+                    
+                    <div class="deck-stats">
+                        <div class="stat">
+                            <span class="stat-label">Cards:</span>
+                            <span class="stat-value" id="deck-card-count">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Value:</span>
+                            <span class="stat-value">$<span id="deck-value">0.00</span></span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Budget Remaining:</span>
+                            <span class="stat-value">$<span id="budget-remaining">100.00</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="budget-progress">
+                        <div class="budget-bar good" id="budget-bar" style="width: 0%"></div>
+                        <div class="budget-label">Budget: $<span id="budget-amount">100.00</span></div>
+                    </div>
+                </div>
+                
+                <div class="deck-content">
+                    <div id="deck-cards">
+                        <p class="empty-message">Your deck is empty. Add cards or generate a deck.</p>
+                    </div>
+                    
+                    <div id="synergy-info" class="synergy-info">
+                        <!-- Synergy information will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="notification-container" class="notification-container"></div>
+    </div>
+    
+    <script src="deck-builder.js"></script>
+</body>
+</html>

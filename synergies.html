@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Synergies - Forge of Decks</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Copy the CSS from your main Forge of Decks file */
+        /* Add these additional styles */
+        .synergies-container {
+            margin: 50px 0;
+        }
+        
+        .synergy-card {
+            background: rgba(26,26,26,0.8);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .synergy-card-pair {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .synergy-card-image {
+            width: 100px;
+            height: 140px;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+        
+        .synergy-card-plus {
+            font-size: 24px;
+            color: var(--forge-accent);
+        }
+        
+        .synergy-card-info {
+            flex: 1;
+            padding: 0 20px;
+        }
+        
+        .synergy-card-score {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--forge-orange);
+            margin-bottom: 10px;
+        }
+        
+        .synergy-card-details {
+            margin-bottom: 5px;
+        }
+        
+        .synergy-card-date {
+            font-size: 0.8em;
+            color: #999;
+        }
+        
+        .synergy-card-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .synergy-card-btn {
+            padding: 8px 15px;
+            background: var(--forge-red);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .synergy-card-btn:hover {
+            background: var(--forge-orange);
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 50px 0;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="https://i.imgur.com/8LIxaXb.png" alt="Forge Logo">
+                    <h1>Forge of Decks</h1>
+                </div>
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="synergies.html" class="active">Saved Synergies</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Synergies Section -->
+    <section class="synergies-container">
+        <div class="container">
+            <h2>Your Saved Synergies</h2>
+            <div id="synergies-list"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="https://i.imgur.com/8LIxaXb.png" alt="Forge Logo">
+                    <h4>Forge of Decks</h4>
+                </div>
+                <div class="footer-links">
+                    <a href="index.html">Home</a>
+                    <a href="synergies.html">Saved Synergies</a>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© 2023 Forge of Decks. All rights reserved. Not affiliated with Wizards of the Coast.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Load saved synergies
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedSynergies();
+        });
+        
+        function loadSavedSynergies() {
+            const synergiesList = document.getElementById('synergies-list');
+            
+            // Get saved synergies from localStorage
+            const savedSynergies = JSON.parse(localStorage.getItem('forgeSynergies') || '[]');
+            
+            if (savedSynergies.length === 0) {
+                synergiesList.innerHTML = `
+                    <div class="empty-message">
+                        <p>You haven't saved any synergies yet.</p>
+                        <p>Go to the <a href="index.html">deck builder</a> and find powerful card combinations!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort by synergy score
+            savedSynergies.sort((a, b) => b.synergy.synergy_score - a.synergy.synergy_score);
+            
+            // Display each synergy
+            savedSynergies.forEach((item, index) => {
+                const synergyCard = document.createElement('div');
+                synergyCard.className = 'synergy-card';
+                
+                // Format date
+                const savedDate = new Date(item.saved_at);
+                const formattedDate = savedDate.toLocaleDateString() + ' ' + savedDate.toLocaleTimeString();
+                
+                // Determine synergy class based on score
+                const scoreValue = item.synergy.synergy_score * 100;
+                let scoreClass = 'low-synergy';
+                if (scoreValue >= 90) scoreClass = 'very-high-synergy';
+                else if (scoreValue >= 80) scoreClass = 'high-synergy';
+                else if (scoreValue >= 70) scoreClass = 'medium-synergy';
+                
+                synergyCard.innerHTML = `
+                    <div class="synergy-card-pair">
+                        <img class="synergy-card-image" src="https://api.scryfall.com/cards/named?format=image&exact=${encodeURIComponent(item.card1.name)}" alt="${item.card1.name}">
+                        <div class="synergy-card-plus">+</div>
+                        <img class="synergy-card-image" src="https://api.scryfall.com/cards/named?format=image&exact=${encodeURIComponent(item.card2.name)}" alt="${item.card2.name}">
+                    </div>
+                    <div class="synergy-card-info">
+                        <div class="synergy-card-score ${scoreClass}">${scoreValue.toFixed(1)}% Synergy</div>
+                        <div class="synergy-card-details">
+                            <strong>${item.card1.name}</strong> + <strong>${item.card2.name}</strong>
+                        </div>
+                        ${item.synergy.combo_type ? `<div class="synergy-card-details">Combo Type: ${item.synergy.combo_type.replace(/_/g, ' ')}</div>` : ''}
+                        ${item.synergy.strategic_role ? `<div class="synergy-card-details">Strategic Role: ${item.synergy.strategic_role.replace(/_/g, ' ')}</div>` : ''}
+                        <div class="synergy-card-date">Saved on ${formattedDate}</div>
+                    </div>
+                    <div class="synergy-card-actions">
+                        <button class="synergy-card-btn" onclick="removeSynergy(${index})">Remove</button>
+                    </div>
+                `;
+                
+                synergiesList.appendChild(synergyCard);
+            });
+        }
+        
+        function removeSynergy(index) {
+            if (confirm('Are you sure you want to remove this synergy?')) {
+                // Get saved synergies
+                let savedSynergies = JSON.parse(localStorage.getItem('forgeSynergies') || '[]');
+                
+                // Remove the synergy at the specified index
+                savedSynergies.splice(index, 1);
+                
+                // Save back to localStorage
+                localStorage.setItem('forgeSynergies', JSON.stringify(savedSynergies));
+                
+                // Reload the page to update the list
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

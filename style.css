@@ -1,0 +1,2720 @@
+/* --- ROOT VARIABLES & GLOBAL STYLES --- */
+:root {
+    --primary-gold: #c9a438;
+    --secondary-gold: #a8882a;
+    --dark-bg: #121212;
+    --card-bg: #1e1e1e;
+    --border-color: #333;
+    --text-light: #e0e0e0;
+    --text-muted: #888;
+    --accent-blue: #5a9de8;
+    --accent-red: #e55a5a;
+    --accent-green: #5ae58a;
+    --shadow-dark: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-gold: 0 0 15px rgba(201, 164, 56, 0.4);
+    
+    /* Rarity colors */
+    --mythic-color: rgba(255, 255, 255, 0.15);
+    --rare-color: rgba(201, 164, 56, 0.15);
+    --uncommon-color: rgba(192, 192, 192, 0.15);
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Roboto:wght@400;500;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--dark-bg);
+    color: var(--text-light);
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80"><rect fill="%231a1a1a" width="80" height="80"></rect><g fill="%232a2a2a"><circle cx="0" cy="0" r="5"></circle><circle cx="0" cy="40" r="5"></circle><circle cx="40" cy="0" r="5"></circle><circle cx="40" cy="40" r="5"></circle><circle cx="80" cy="0" r="5"></circle><circle cx="80" cy="40" r="5"></circle><circle cx="0" cy="80" r="5"></circle><circle cx="40" cy="80" r="5"></circle><circle cx="80" cy="80" r="5"></circle></g></svg>');
+    line-height: 1.6;
+}
+
+/* --- HEADER & SEARCH --- */
+.header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    position: relative;
+    padding: 3rem 1rem;
+    text-align: center;
+    border-bottom: 4px solid var(--primary-gold);
+    box-shadow: var(--shadow-dark);
+    overflow: hidden;
+}
+
+/* Add a subtle pattern overlay */
+.header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a438' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+    z-index: 0;
+}
+
+.header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 3rem;
+    color: var(--primary-gold);
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+    position: relative;
+    z-index: 1;
+}
+
+.header p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0.5rem auto 0;
+    position: relative;
+    z-index: 1;
+}
+
+.search-section {
+    padding: 2rem 1rem;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+#searchForm {
+    display: flex;
+    max-width: 700px;
+    margin: 0 auto;
+    box-shadow: var(--shadow-dark);
+}
+
+#searchInput {
+    flex-grow: 1;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    border: 2px solid var(--border-color);
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    background: #2a2a2a;
+    color: var(--text-light);
+}
+
+#searchInput:focus {
+    outline: none;
+    border-color: var(--primary-gold);
+    box-shadow: var(--shadow-gold);
+}
+
+#searchForm button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    background: var(--primary-gold);
+    color: var(--dark-bg);
+    border: 2px solid var(--primary-gold);
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#searchForm button:hover {
+    background-color: var(--secondary-gold);
+}
+
+.search-results {
+    max-width: 700px;
+    margin: 0 auto;
+    background: #2a2a2a;
+    border-radius: 0 0 8px 8px;
+    display: none;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    box-shadow: var(--shadow-dark);
+}
+
+/* --- FORMAT SELECTOR --- */
+.format-selector {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 2rem 1rem;
+}
+
+.format-button {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-width: 180px;
+}
+
+.format-button:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-gold);
+    box-shadow: var(--shadow-gold);
+}
+
+.format-button.selected {
+    background: var(--primary-gold);
+    color: var(--dark-bg);
+    border-color: var(--primary-gold);
+    box-shadow: var(--shadow-gold);
+}
+
+.format-button.selected .format-name {
+    color: var(--dark-bg);
+}
+
+.format-button.selected .format-desc {
+    color: #333;
+}
+
+.format-name {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-gold);
+    margin-bottom: 0.25rem;
+}
+
+.format-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.format-info {
+    max-width: 800px;
+    margin: 0 auto 2rem auto;
+    padding: 1.5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    text-align: center;
+}
+
+#formatTitle {
+    font-family: 'Cinzel', serif;
+    color: var(--primary-gold);
+    margin-bottom: 1rem;
+}
+
+/* --- CONTROLS --- */
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: #1a1a1a;
+    border-radius: 12px;
+    max-width: 1000px;
+    margin: 0 auto 2rem auto;
+    flex-wrap: wrap;
+}
+
+.controls button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid var(--primary-gold);
+}
+
+#generateCards {
+    background: var(--primary-gold);
+    color: var(--dark-bg);
+}
+
+#generateCards:hover {
+    background: var(--secondary-gold);
+    box-shadow: var(--shadow-gold);
+}
+
+.size-control, .budget-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+label {
+    font-weight: 500;
+}
+
+input[type="range"] {
+    cursor: pointer;
+}
+
+input[type="number"] {
+    width: 80px;
+    padding: 0.5rem;
+    background: #2a2a2a;
+    border: 1px solid var(--border-color);
+    color: var(--text-light);
+    border-radius: 5px;
+}
+
+.budget-button {
+    background: var(--card-bg);
+    color: var(--primary-gold);
+}
+
+.budget-button.active {
+    background: var(--accent-green);
+    color: var(--dark-bg);
+    border-color: var(--accent-green);
+}
+
+/* --- LOADING --- */
+.loading {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.2rem;
+    color: var(--text-muted);
+}
+
+/* Large Card Grid Layout */
+.commanders-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+/* Large Card Style */
+.large-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    position: relative;
+    box-shadow: var(--shadow-dark);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.large-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* Card with synergy potential */
+.large-card.has-synergy {
+    border: 3px solid var(--primary-gold);
+    box-shadow: 0 0 15px rgba(201, 164, 56, 0.4);
+}
+
+/* Card image container */
+.large-card-image-container {
+    position: relative;
+    width: 100%;
+    padding-top: 139%; /* Standard card aspect ratio */
+    overflow: hidden;
+}
+
+.large-card-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.large-card:hover .large-card-image {
+    transform: scale(1.05);
+}
+
+/* Card info section */
+.large-card-info {
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.8);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.large-card-name {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-gold);
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.large-card-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.large-card-detail {
+    display: flex;
+    justify-content: space-between;
+}
+
+.detail-label {
+    color: var(--text-muted);
+}
+
+.detail-value {
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.detail-value.price {
+    color: var(--accent-green);
+}
+
+.detail-value.cmc {
+    color: var(--accent-blue);
+}
+
+/* Synergy indicator */
+.large-card-synergy {
+    background: rgba(201, 164, 56, 0.15);
+    color: var(--primary-gold);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.synergy-star {
+    color: var(--primary-gold);
+}
+
+/* Card actions */
+.large-card-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.large-card-btn {
+    padding: 8px 0;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.select-card-btn {
+    background: var(--primary-gold);
+    color: var(--dark-bg);
+    border: none;
+}
+
+.select-card-btn:hover {
+    background: var(--secondary-gold);
+}
+
+.scryfall-btn {
+    background: transparent;
+    color: var(--text-light);
+    border: 1px solid var(--text-muted);
+}
+
+.scryfall-btn:hover {
+    border-color: var(--text-light);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Banned card indicator */
+.banned-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(229, 90, 90, 0.9);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    z-index: 2;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .commanders-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 15px;
+    }
+    
+    .large-card-name {
+        font-size: 1rem;
+    }
+    
+    .large-card-details {
+        font-size: 0.8rem;
+    }
+}
+
+/* Flattened card list */
+.card-list-container {
+    width: 100%;
+}
+
+/* Card list item style */
+.commander-card, .card-list-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.commander-card:hover, .card-list-item:hover {
+    background-color: rgba(201, 164, 56, 0.1);
+}
+
+.commander-card:last-child, .card-list-item:last-child {
+    border-bottom: none;
+}
+
+/* Rarity background wipes */
+.rarity-mythic {
+    background: linear-gradient(to right, transparent, var(--mythic-color), transparent);
+}
+
+.rarity-rare {
+    background: linear-gradient(to right, transparent, var(--rare-color), transparent);
+}
+
+.rarity-uncommon {
+    background: linear-gradient(to right, transparent, var(--uncommon-color), transparent);
+}
+
+.card-name {
+    font-weight: 500;
+    color: var(--text-light);
+    flex-grow: 1;
+}
+
+.card-mana-cost {
+    color: var(--accent-blue);
+    font-size: 0.9rem;
+    margin-left: 0.5rem;
+}
+
+/* Card image positioning on hover */
+.card-image, .card-preview img {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    width: 223px; /* Standard card width */
+    height: auto;
+    border-radius: 10px;
+    box-shadow: var(--shadow-dark);
+    pointer-events: none;
+}
+
+.commander-card:hover .card-image,
+.card-list-item:hover .card-preview {
+    display: block;
+    left: -250px; /* Position on left margin */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Card hover container */
+.card-hover-container {
+    position: relative;
+    display: inline-block;
+}
+
+.card-name-link {
+    cursor: pointer;
+    color: var(--text-light);
+    text-decoration: none;
+}
+
+.card-name-link:hover {
+    color: var(--primary-gold);
+}
+
+.card-hover-image {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    width: 223px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: var(--shadow-dark);
+    pointer-events: none;
+}
+
+/* --- SELECTED CARD --- */
+.selected-commander {
+    padding: 2rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+    max-width: 800px;
+    margin: 2rem auto;
+    text-align: center;
+}
+
+#selectedCardTitle {
+    font-family: 'Cinzel', serif;
+    color: var(--primary-gold);
+    margin-bottom: 1rem;
+}
+
+.selected-card-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.selected-card-image {
+    max-width: 300px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-dark);
+}
+
+.selected-card-info {
+    flex: 1;
+    min-width: 300px;
+    text-align: left;
+}
+
+.selected-card-info h3 {
+    font-family: 'Cinzel', serif;
+    color: var(--primary-gold);
+    margin-bottom: 1rem;
+}
+
+.card-details {
+    margin-bottom: 1.5rem;
+}
+
+.oracle-text {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 3px solid var(--primary-gold);
+}
+
+#findCombosBtn, #generateDeckBtn {
+    margin-top: 1.5rem;
+    padding: 0.8rem 2rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid var(--accent-blue);
+    background: var(--accent-blue);
+    color: white;
+}
+
+#findCombosBtn:hover, #generateDeckBtn:hover {
+    background: #4a8cd0;
+    box-shadow: 0 0 15px rgba(90, 157, 232, 0.4);
+}
+
+/* --- DECK & COMBOS SECTION --- */
+.deck-section {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border-top: 4px solid var(--primary-gold);
+}
+
+.deck-section h2 {
+    font-family: 'Cinzel', serif;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-gold);
+}
+
+.progress {
+    width: 100%;
+    background-color: #333;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+.progress-bar {
+    height: 20px;
+    background-color: var(--primary-gold);
+    border-radius: 5px;
+    transition: width 0.5s ease-in-out;
+}
+
+.rule-violation, .budget-warning {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: bold;
+}
+
+.rule-violation {
+    background-color: rgba(229, 90, 90, 0.2);
+    color: var(--accent-red);
+    border: 1px solid var(--accent-red);
+}
+
+.budget-warning {
+    background-color: rgba(230, 162, 60, 0.2);
+    color: #e6a23c;
+    border: 1px solid #e6a23c;
+}
+
+.price-info {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.total-price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent-green);
+}
+
+.deck-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.stat-item {
+    background: #2a2a2a;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.stat-item .value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-gold);
+}
+
+.stat-item .label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.deck-list-container {
+    background: #2a2a2a;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.deck-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#deckListTitle {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+}
+
+.deck-actions button {
+    margin-left: 0.5rem;
+    background: var(--card-bg);
+    color: var(--primary-gold);
+    border: 1px solid var(--primary-gold);
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* --- COMPLETELY FLATTENED DECK LIST --- */
+.deck-list {
+    /* Single column layout */
+    width: 100%;
+}
+
+/* Category headers */
+.deck-category {
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    background: #1a1a1a;
+    border-radius: 5px;
+    border-left: 4px solid var(--primary-gold);
+}
+
+.deck-category h4 {
+    color: var(--primary-gold);
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.deck-list ul {
+    list-style: none;
+    margin: 0 0 1.5rem 0;
+    padding: 0;
+}
+
+/* Flattened card items with rarity wipes */
+.deck-list li {
+    padding: 0.5rem 1rem;
+    margin-bottom: 2px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Rarity background wipes for deck list */
+.deck-list li.rarity-mythic {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.1), var(--mythic-color), rgba(0, 0, 0, 0.1));
+}
+
+.deck-list li.rarity-rare {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.1), var(--rare-color), rgba(0, 0, 0, 0.1));
+}
+
+.deck-list li.rarity-uncommon {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.1), var(--uncommon-color), rgba(0, 0, 0, 0.1));
+}
+
+.deck-list li:hover {
+    background-color: rgba(201, 164, 56, 0.1);
+}
+
+/* Ensure hover effect works with rarity backgrounds */
+.deck-list li.rarity-mythic:hover {
+    background: linear-gradient(to right, rgba(201, 164, 56, 0.1), var(--mythic-color), rgba(201, 164, 56, 0.1));
+}
+
+.deck-list li.rarity-rare:hover {
+    background: linear-gradient(to right, rgba(201, 164, 56, 0.1), var(--rare-color), rgba(201, 164, 56, 0.1));
+}
+
+.deck-list li.rarity-uncommon:hover {
+    background: linear-gradient(to right, rgba(201, 164, 56, 0.1), var(--uncommon-color), rgba(201, 164, 56, 0.1));
+}
+
+.deck-list .card-count {
+    color: var(--primary-gold);
+    font-weight: bold;
+    margin-right: 0.5rem;
+    min-width: 25px;
+}
+
+.deck-list .card-name {
+    flex-grow: 1;
+    cursor: pointer;
+}
+
+.deck-list .card-mana {
+    color: var(--accent-blue);
+    font-size: 0.9rem;
+    margin-left: 0.5rem;
+}
+
+/* Card preview in deck list - positioned on left margin */
+.deck-list li .card-preview {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.deck-list li:hover .card-preview {
+    display: block;
+    left: -250px; /* Position on left margin */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.card-preview img {
+    height: 300px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-dark);
+}
+
+/* Rarity indicator */
+.rarity-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.rarity-indicator.mythic {
+    background: radial-gradient(circle, #ff8a00, #e53935);
+    box-shadow: 0 0 5px rgba(255, 138, 0, 0.7);
+}
+
+.rarity-indicator.rare {
+    background: radial-gradient(circle, #c9a438, #8a7425);
+    box-shadow: 0 0 5px rgba(201, 164, 56, 0.7);
+}
+
+.rarity-indicator.uncommon {
+    background: radial-gradient(circle, #c0c0c0, #808080);
+    box-shadow: 0 0 5px rgba(192, 192, 192, 0.7);
+}
+
+.rarity-indicator.common {
+    background: #333;
+    border: 1px solid #555;
+}
+
+/* --- COMBO LIST --- */
+.combo-list {
+    list-style: none;
+}
+
+.combo-item {
+    background: #2a2a2a;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--accent-blue);
+}
+
+.combo-item h4 {
+    color: var(--primary-gold);
+    margin-bottom: 0.5rem;
+}
+
+.combo-cards {
+    margin-bottom: 0.5rem;
+}
+
+.combo-description {
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+}
+
+.combo-source {
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* --- SAVED DECKS --- */
+.saved-decks-section {
+    max-width: 1200px;
+    margin: 2rem auto;
+}
+
+.saved-decks-section h2 {
+    font-family: 'Cinzel', serif;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--primary-gold);
+}
+
+.saved-decks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.saved-deck-item {
+    background: var(--card-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.saved-deck-item:hover {
+    border-color: var(--primary-gold);
+    box-shadow: var(--shadow-gold);
+}
+
+.saved-deck-name {
+    font-weight: bold;
+    color: var(--primary-gold);
+    margin-bottom: 0.5rem;
+}
+
+.saved-deck-format {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.saved-deck-commander {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.saved-deck-colors {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.color-w { background-color: #f8f6d8; }
+.color-u { background-color: #c1d7e9; }
+.color-b { background-color: #756a77; }
+.color-r { background-color: #e49977; }
+.color-g { background-color: #a3c095; }
+
+.saved-deck-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.delete-deck-btn {
+    background: var(--accent-red);
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    float: right;
+}
+
+/* --- MODAL --- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    margin: auto;
+    display: block;
+    max-width: 80%;
+    max-height: 80%;
+    border-radius: 15px;
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+}
+
+/* --- DONATE FORM --- */
+.donate-form {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* --- SYNERGY INDICATORS --- */
+.synergy-indicator {
+    color: var(--primary-gold);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.synergy-indicator-large {
+    color: var(--primary-gold);
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    padding: 0.5rem;
+    border: 1px solid var(--primary-gold);
+    border-radius: 5px;
+    background: rgba(201, 164, 56, 0.1);
+}
+
+.synergy-excellent { color: #5ae58a; }
+.synergy-good { color: var(--primary-gold); }
+.synergy-average { color: #e6a23c; }
+.synergy-poor { color: #e55a5a; }
+.synergy-bad { color: #8c8c8c; }
+
+/* --- PRICE INDICATORS --- */
+.price-low { color: var(--text-light); }
+.price-medium { color: var(--accent-blue); }
+.price-high { color: var(--primary-gold); }
+.price-very-high { color: var(--accent-red); }
+.price-unknown { color: var(--text-muted); }
+
+/* --- RESPONSIVE ADJUSTMENTS --- */
+@media (max-width: 768px) {
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .format-selector {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .format-button {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    /* Adjust card preview position for mobile */
+    .deck-list li:hover .card-preview,
+    .commander-card:hover .card-image,
+    .card-list-item:hover .card-preview {
+        left: 50%;
+        top: -320px;
+        transform: translateX(-50%);
+    }
+}
+
+/* Spinner styles */
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(201, 164, 56, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--primary-gold);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.spinner-text {
+    margin-top: 1rem;
+    color: var(--primary-gold);
+    font-weight: bold;
+}
+
+/* Add to styles.css */
+.generate-button, #findCombosBtn, #generateDeckBtn, #exportBtn, #saveDeckBtn {
+    position: relative;
+    overflow: hidden;
+}
+
+.generate-button:before, #findCombosBtn:before, #generateDeckBtn:before, #exportBtn:before, #saveDeckBtn:before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(30deg);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.generate-button:hover:before, #findCombosBtn:hover:before, #generateDeckBtn:hover:before, #exportBtn:hover:before, #saveDeckBtn:hover:before {
+    opacity: 1;
+    animation: goldWipe 1s forwards;
+}
+
+@keyframes goldWipe {
+    0% {
+        transform: translateX(-100%) rotate(30deg);
+    }
+    100% {
+        transform: translateX(100%) rotate(30deg);
+    }
+}
+
+/* Full-screen overlay styles */
+.fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: -1; /* Start behind everything */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align to top */
+  padding-top: 5vh; /* Reduced padding from top */
+  overflow: auto; /* Allow scrolling if needed */
+}
+
+.fullscreen-overlay.visible {
+  z-index: 10; /* Come to front when visible */
+  opacity: 1;
+  visibility: visible;
+}
+
+.overlay-content {
+  position: relative;
+  width: 350px;
+  max-width: 90vw;
+  max-height: 85vh; /* Increased max height */
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+  overflow: auto; /* Enable scrolling within the card if content is too tall */
+  transform: scale(0.9);
+  transition: transform 0.3s ease;  
+  margin-bottom: 5vh; /* Add margin at bottom to ensure it's not cut off */
+}
+
+.fullscreen-overlay.visible .overlay-content {
+  transform: scale(1);
+}
+
+/* Card image container - limit height */
+.card-image-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: #000;
+  max-height: 60vh; /* Limit image height */
+  overflow: hidden;
+}
+
+.card-image-container img {
+  width: auto; /* Allow width to adjust */
+  max-width: 100%;
+  height: auto;
+  max-height: 60vh;
+  object-fit: contain;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  background: rgba(255, 0, 0, 0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 11;
+}
+
+.close-button:hover {
+  background: rgba(255, 0, 0, 0.9);
+  transform: scale(1.1);
+}
+
+/* Card display styles */
+.card-display {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.7);
+  font-family: 'Cinzel', serif;
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--primary-gold);
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-image-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: #000;
+}
+
+.card-image-container img {
+  width: 100%;
+  height: auto;
+  max-height: 60vh;
+  object-fit: contain;
+}
+
+/* Enhanced Card Hover Styles - Centered in Viewport */
+.enhanced-hover-card {
+    position: absolute;
+    z-index: 1000;
+    display: none;
+    width: 350px;
+    max-width: 90vw; /* Responsive width */
+    height: auto;
+    max-height: 85vh; /* Leave some margin */
+    /* top: 50%;
+    left: 50%; */
+    transform: translate(-50%, -50%); /* Center perfectly */
+    background: var(--dark-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    overflow: auto;
+    pointer-events: auto;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.enhanced-hover-card.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Card title bar */
+.enhanced-hover-card .card-title {
+    padding: 12px 15px;
+    background: rgba(0, 0, 0, 0.9);
+    border-bottom: 1px solid var(--border-color);
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--primary-gold);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+/* Card image container */
+.enhanced-hover-card .card-image-container {
+    height: auto; /* Auto height */
+    max-height: calc(80vh - 180px); /* Maximum height for image */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    overflow: hidden;
+}
+
+/* Card image */
+.enhanced-hover-card img {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain; /* Maintain aspect ratio while filling container */
+    display: block;
+}
+
+/* Card info footer */
+.enhanced-hover-card .card-info {
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.85);
+    border-top: 1px solid var(--border-color);
+    font-size: 14px;
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+}
+
+/* Info layout */
+.enhanced-hover-card .card-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+/* Info items */
+.enhanced-hover-card .info-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.enhanced-hover-card .info-label {
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-right: 5px;
+}
+
+/* Specific info styling */
+.enhanced-hover-card .cmc {
+    color: var(--accent-blue);
+    font-weight: bold;
+}
+
+.enhanced-hover-card .price {
+    color: var(--accent-green);
+    font-weight: bold;
+}
+
+.enhanced-hover-card .rarity {
+    color: var(--primary-gold);
+    font-weight: bold;
+}
+
+.enhanced-hover-card .type {
+    color: var(--text-light);
+}
+
+/* Rarity-based borders and effects */
+.rarity-mythic .enhanced-hover-card {
+    box-shadow: 0 0 30px rgba(255, 140, 0, 0.4);
+    border: 2px solid #ff8c00;
+}
+
+.rarity-rare .enhanced-hover-card {
+    box-shadow: 0 0 30px rgba(201, 164, 56, 0.4);
+    border: 2px solid var(--primary-gold);
+}
+
+.rarity-uncommon .enhanced-hover-card {
+    box-shadow: 0 0 30px rgba(192, 192, 192, 0.4);
+    border: 2px solid #c0c0c0;
+}
+
+/* Scryfall link styling - Much more prominent */
+.enhanced-hover-card .scryfall-link {
+    grid-column: span 2;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.enhanced-hover-card .scryfall-link a {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: var(--accent-blue);
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.enhanced-hover-card .scryfall-link a:hover {
+    background-color: #4a8cd0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Close button for the hover card */
+.enhanced-hover-card .close-hover-card {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 0, 0, 0.7);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 101;
+}
+
+.enhanced-hover-card .close-hover-card:hover {
+    background: rgba(255, 0, 0, 0.9);
+    transform: scale(1.1);
+}
+
+/* For smaller screens, adjust size and position */
+@media (max-width: 768px) {
+    .enhanced-hover-card {
+        width: 300px;
+        left: 10px;
+    }
+}
+
+/* Floating Donation Button Styles */
+.floating-donate {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99;
+}
+
+.donate-button {
+    background: linear-gradient(135deg, var(--primary-gold), var(--secondary-gold));
+    color: var(--dark-bg);
+    border: none;
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.donate-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(201, 164, 56, 0.4);
+}
+
+.donate-button .icon {
+    font-size: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .floating-donate {
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    .donate-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+
+/* Enhanced Card Grid with Animations */
+.commanders-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    min-height: 400px; /* Ensure grid has height even when empty */
+}
+
+/* Full width spinner container */
+.spinner-container.full-width {
+    width: 100%;
+    grid-column: 1 / -1;
+    height: 300px;
+}
+
+/* Enhanced Large Card Style */
+.large-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: var(--shadow-dark);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(30px);
+    opacity: 0;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                opacity 0.6s ease,
+                box-shadow 0.3s ease,
+                transform 0.3s ease;
+}
+
+/* Card reveal animation */
+.large-card.revealed {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Hover effects */
+.large-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+    z-index: 2;
+}
+
+/* Card entrance animation */
+.card-entrance {
+    animation: cardEntrance 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes cardEntrance {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Rarity-based styling */
+.large-card.rarity-mythic {
+    border: 2px solid transparent;
+    background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+                linear-gradient(135deg, #ff8a00, #e53935) border-box;
+}
+
+.large-card.rarity-rare {
+    border: 2px solid transparent;
+    background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+                linear-gradient(135deg, #c9a438, #8a7425) border-box;
+}
+
+.large-card.rarity-uncommon {
+    border: 2px solid transparent;
+    background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+                linear-gradient(135deg, #c0c0c0, #808080) border-box;
+}
+
+.large-card.rarity-common {
+    border: 2px solid transparent;
+    background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+                linear-gradient(135deg, #333, #555) border-box;
+}
+
+/* Card with synergy potential */
+.large-card.has-synergy {
+    border: 2px solid transparent;
+    background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+                linear-gradient(135deg, var(--primary-gold), #ffcc00) border-box;
+}
+
+/* Card glow effect */
+.card-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.large-card.rarity-mythic .card-glow {
+    box-shadow: 0 0 30px rgba(255, 138, 0, 0.5);
+}
+
+.large-card.rarity-rare .card-glow {
+    box-shadow: 0 0 30px rgba(201, 164, 56, 0.5);
+}
+
+.large-card.rarity-uncommon .card-glow {
+    box-shadow: 0 0 20px rgba(192, 192, 192, 0.5);
+}
+
+.large-card:hover .card-glow {
+    opacity: 1;
+}
+
+/* Double-faced card styles */
+.double-faced {
+    perspective: 1000px; /* Required for 3D effect */
+    height: 100%;
+    position: relative;
+}
+
+.double-faced .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+.double-faced.flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+.double-faced .card-front,
+.double-faced .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden; /* Safari */
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.double-faced .card-front {
+    background-color: var(--card-bg);
+}
+
+.double-faced .card-back {
+    background-color: var(--card-bg);
+    transform: rotateY(180deg);
+}
+
+/* Prominent flip button */
+.flip-card-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(135deg, var(--primary-gold), var(--secondary-gold));
+    color: var(--dark-bg);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    z-index: 20;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    animation: pulseButton 2s infinite;
+}
+
+.flip-card-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.flip-card-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.flip-icon {
+    display: inline-block;
+    animation: rotate 2s linear infinite;
+    font-size: 1.2rem;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulseButton {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Flip hint animation */
+@keyframes flipHint {
+    0% { transform: rotateY(0deg); }
+    15% { transform: rotateY(15deg); }
+    30% { transform: rotateY(0deg); }
+}
+
+.double-faced.revealed .card-inner {
+    animation: flipHint 2s ease-in-out 1s;
+}
+
+/* Ensure buttons are clickable */
+.double-faced .large-card-actions {
+    position: relative;
+    z-index: 20;
+}
+
+/* Add a visual indicator that the card is double-faced */
+.double-faced::before {
+    content: '↻';
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    background: rgba(201, 164, 56, 0.8);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    z-index: 10;
+    animation: rotate 4s linear infinite;
+}
+
+/* Button Sheen Animation */
+.large-card-btn, 
+.format-button, 
+.controls button, 
+#findCombosBtn, 
+#generateDeckBtn, 
+#exportBtn, 
+#saveDeckBtn,
+.deck-actions button,
+.flip-card-btn,
+.donate-button {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.large-card-btn::before, 
+.format-button::before, 
+.controls button::before, 
+#findCombosBtn::before, 
+#generateDeckBtn::before, 
+#exportBtn::before, 
+#saveDeckBtn::before,
+.deck-actions button::before,
+.flip-card-btn::before,
+.donate-button::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -100%;
+    width: 70%;
+    height: 200%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(25deg);
+    z-index: -1;
+    transition: left 0.7s ease;
+    pointer-events: none;
+}
+
+/* Trigger animation on hover */
+.large-card-btn:hover::before, 
+.format-button:hover::before, 
+.controls button:hover::before, 
+#findCombosBtn:hover::before, 
+#generateDeckBtn:hover::before, 
+#exportBtn:hover::before, 
+#saveDeckBtn:hover::before,
+.deck-actions button:hover::before,
+.flip-card-btn:hover::before,
+.donate-button:hover::before {
+    animation: sheenEffect 1.2s forwards;
+}
+
+/* Card Frame Sheen Animation */
+.large-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.large-card::after {
+    content: '';
+    position: absolute;
+    top: -150%;
+    left: -100%;
+    width: 60%;
+    height: 400%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(35deg);
+    z-index: 1;
+    transition: all 0.7s ease;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.large-card:hover::after {
+    animation: frameSheenEffect 1.5s forwards;
+}
+
+/* Special sheen for rarity-specific cards */
+.large-card.rarity-mythic::after {
+    background: linear-gradient(
+        to right,
+        rgba(255, 138, 0, 0) 0%,
+        rgba(255, 138, 0, 0.15) 50%,
+        rgba(255, 138, 0, 0) 100%
+    );
+}
+
+.large-card.rarity-rare::after {
+    background: linear-gradient(
+        to right,
+        rgba(201, 164, 56, 0) 0%,
+        rgba(201, 164, 56, 0.15) 50%,
+        rgba(201, 164, 56, 0) 100%
+    );
+}
+
+.large-card.rarity-uncommon::after {
+    background: linear-gradient(
+        to right,
+        rgba(192, 192, 192, 0) 0%,
+        rgba(192, 192, 192, 0.15) 50%,
+        rgba(192, 192, 192, 0) 100%
+    );
+}
+
+/* Sheen animation for card images */
+.large-card-image-container::after {
+    content: '';
+    position: absolute;
+    top: -150%;
+    left: -100%;
+    width: 50%;
+    height: 400%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(35deg);
+    z-index: 2;
+    transition: all 0.7s ease;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.large-card:hover .large-card-image-container::after {
+    animation: imageSheenEffect 1.2s forwards;
+}
+
+/* Animation keyframes */
+@keyframes sheenEffect {
+    0% {
+        left: -100%;
+        opacity: 0.7;
+    }
+    100% {
+        left: 150%;
+        opacity: 0;
+    }
+}
+
+@keyframes frameSheenEffect {
+    0% {
+        left: -100%;
+        opacity: 0.5;
+    }
+    100% {
+        left: 150%;
+        opacity: 0;
+    }
+}
+
+@keyframes imageSheenEffect {
+    0% {
+        left: -100%;
+        opacity: 0.7;
+    }
+    100% {
+        left: 150%;
+        opacity: 0;
+    }
+}
+
+
+/* CARD ANALYSIS DISPLAY *?
+
+/* Add this to your style.css file */
+
+/* Card Analysis Styles */
+.card-analysis-container {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    color: var(--text-light);
+}
+
+.card-analysis-container h3 {
+    color: var(--primary-gold);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+.card-analysis-container h4 {
+    color: var(--accent-blue);
+    margin: 15px 0 8px;
+}
+
+.narrative-section {
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.strategy-section {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.strategy-primary {
+    font-weight: bold;
+    color: var(--primary-gold);
+}
+
+.strategy-support {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.risk-section {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.high-risk {
+    background: rgba(255, 50, 50, 0.2);
+    border-left: 3px solid #ff3232;
+}
+
+.medium-risk {
+    background: rgba(255, 165, 0, 0.2);
+    border-left: 3px solid orange;
+}
+
+.low-risk {
+    background: rgba(255, 255, 0, 0.1);
+    border-left: 3px solid yellow;
+}
+
+.pt-section {
+    background: rgba(0, 100, 255, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    border-left: 3px solid var(--accent-blue);
+}
+
+.win-conditions-section ul,
+.synergy-section ul {
+    padding-left: 20px;
+}
+
+.win-conditions-section li,
+.synergy-section li {
+    margin-bottom: 5px;
+}
+
+.synergy-recommendation {
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 0.9em;
+    margin-top: 3px;
+}
+
+.win-rate-section {
+    margin-top: 20px;
+}
+
+.win-rate-meter {
+    height: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    margin-top: 10px;
+}
+
+.win-rate-fill {
+    height: 100%;
+    background: linear-gradient(to right, #4CAF50, #8BC34A);
+    border-radius: 10px;
+    transition: width 1s ease-in-out;
+}
+
+.win-rate-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    line-height: 20px;
+    font-weight: bold;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.7);
+}
+
+/* Synergy display styles */
+.synergy-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.synergy-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10,10,10,0.6);
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.synergy-item:hover {
+    background: rgba(10,10,10,0.8);
+    transform: translateY(-2px);
+}
+
+.synergy-card {
+    font-weight: 500;
+}
+
+.synergy-score {
+    background: var(--forge-accent);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.9em;
+    font-weight: 700;
+}
+
+.combo-type {
+    position: absolute;
+    top: -8px;
+    left: 10px;
+    background: var(--forge-red);
+    color: white;
+    font-size: 0.7em;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-transform: capitalize;
+}
+
+.view-all-btn {
+    background: var(--forge-dark);
+    color: var(--forge-light);
+    border: 1px solid var(--forge-accent);
+    padding: 8px 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.view-all-btn:hover {
+    background: var(--forge-accent);
+}
+
+.synergy-pairs {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.synergy-pairs li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(122,59,46,0.3);
+}
+
+.pair-score {
+    font-weight: 700;
+    color: var(--forge-orange);
+}
+
+.suggestions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.suggestion-item {
+    background: rgba(10,10,10,0.6);
+    padding: 12px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.suggestion-name {
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.suggestion-type {
+    font-size: 0.8em;
+    opacity: 0.7;
+    margin-bottom: 8px;
+}
+
+.suggestion-synergy {
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
+.add-suggestion {
+    background: var(--forge-red);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.add-suggestion:hover {
+    background: var(--forge-orange);
+}
+
+/* Enhanced Synergy Display Styles */
+.card-details {
+    background: rgba(10,10,10,0.6);
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border-left: 3px solid var(--forge-accent);
+}
+
+.card-type-info {
+    margin-bottom: 10px;
+}
+
+.card-oracle-text {
+    font-style: italic;
+    line-height: 1.4;
+}
+
+.detail-label {
+    font-weight: bold;
+    color: var(--forge-orange);
+}
+
+.synergy-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat-item {
+    background: rgba(26,26,26,0.8);
+    padding: 10px 15px;
+    border-radius: 5px;
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.8em;
+    opacity: 0.8;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--forge-orange);
+}
+
+/* Synergy tabs */
+.synergy-tabs, .analysis-tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(122,59,46,0.3);
+}
+
+.syn-tab, .analysis-tab {
+    padding: 8px 15px;
+    background: none;
+    border: none;
+    color: var(--forge-light);
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.syn-tab.active, .analysis-tab.active {
+    color: var(--forge-orange);
+}
+
+.syn-tab.active::after, .analysis-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--forge-orange);
+}
+
+.synergy-tab-content, .analysis-tab-content {
+    position: relative;
+}
+
+.tab-pane {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Synergy score colors */
+.very-high-synergy {
+    color: #ff4b2b !important;
+}
+
+.high-synergy {
+    color: #ff9d2f !important;
+}
+
+.medium-synergy {
+    color: #ffcd38 !important;
+}
+
+.low-synergy {
+    color: #7f8c8d !important;
+}
+
+/* Synergy breakdown */
+.synergy-breakdown {
+    background: rgba(26,26,26,0.8);
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.breakdown-chart {
+    margin-top: 10px;
+}
+
+.breakdown-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.breakdown-label {
+    width: 120px;
+    font-size: 0.9em;
+}
+
+.breakdown-bar {
+    flex: 1;
+    height: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 0 10px;
+}
+
+.breakdown-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--forge-orange), var(--forge-red));
+    border-radius: 5px;
+}
+
+.breakdown-value {
+    width: 40px;
+    text-align: right;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+/* Distribution chart */
+.synergy-distribution {
+    background: rgba(26,26,26,0.8);
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.distribution-chart {
+    margin-top: 10px;
+}
+
+.distribution-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.distribution-label {
+    width: 80px;
+    font-size: 0.9em;
+}
+
+.distribution-bar-container {
+    flex: 1;
+    height: 15px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 0 10px;
+}
+
+.distribution-bar-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--forge-accent), var(--forge-red));
+    border-radius: 5px;
+}
+
+.distribution-count {
+    width: 30px;
+    text-align: right;
+    font-weight: bold;
+}
+
+/* Synergy pairs list */
+.synergy-pairs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.synergy-pair-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(26,26,26,0.8);
+    padding: 12px 15px;
+    border-radius: 5px;
+}
+
+.pair-cards {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pair-card {
+    font-weight: 500;
+}
+
+.pair-plus {
+    color: var(--forge-accent);
+    font-weight: bold;
+}
+
+.pair-details {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pair-score {
+    font-weight: bold;
+}
+
+.pair-combo-type {
+    background: var(--forge-accent);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    text-transform: capitalize;
+}
+
+/* Suggestions list */
+.suggestions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.suggestion-item {
+    background: rgba(26,26,26,0.8);
+    padding: 15px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.suggestion-header {
+    margin-bottom: 10px;
+}
+
+.suggestion-name {
+    font-weight: 700;
+    font-size: 1.1em;
+    margin-bottom: 3px;
+}
+
+.suggestion-type {
+    font-size: 0.9em;
+    opacity: 0.7;
+}
+
+.suggestion-synergy-with {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.synergy-with-label {
+    font-weight: 500;
+    color: var(--forge-orange);
+}
+
+.synergy-with-card {
+    background: rgba(10,10,10,0.6);
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-right: 5px;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.synergy-with-score {
+    font-weight: bold;
+    color: var(--forge-orange);
+}
+
+.suggestion-combos {
+    margin-bottom: 15px;
+}
+
+.combos-label {
+    font-weight: 500;
+    color: var(--forge-orange);
+    margin-right: 5px;
+}
+
+.suggestion-combo-type {
+    background: var(--forge-accent);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    text-transform: capitalize;
+    margin-right: 5px;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.add-suggestion {
+    background: var(--forge-red);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.add-suggestion:hover {
+    background: var(--forge-orange);
+    transform: translateY(-2px);
+}
+
+/* Not found warning */
+.not-found-warning {
+    background: rgba(231, 76, 60, 0.2);
+    border-left: 3px solid #e74c3c;
+    padding: 10px 15px;
+    margin-top: 15px;
+    border-radius: 4px;
+}
+
+.not-found-warning ul {
+    margin: 5px 0 0 20px;
+    font-size: 0.9em;
+    opacity: 0.9;
+}
+
+/* Combo summary */
+.combo-summary {
+    background: rgba(26,26,26,0.8);
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+.combo-type-list {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.combo-type-item {
+    background: rgba(10,10,10,0.6);
+    padding: 8px 12px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 180px;
+}
+
+.combo-type-name {
+    text-transform: capitalize;
+}
+
+.combo-type-count {
+    background: var(--forge-accent);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+/* Deck analysis stats */
+.deck-analysis-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin: 15px 0;
+}
+
+/* Deck synergies styles */
+.deck-synergies {
+    margin-top: 30px;
+    padding: 15px;
+    background: rgba(26,26,26,0.8);
+    border-radius: 8px;
+}
+
+.deck-synergy-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.deck-synergy-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10,10,10,0.6);
+    padding: 12px 15px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.synergy-pair {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.synergy-plus {
+    color: var(--forge-accent);
+    font-weight: bold;
+}
+
+.synergy-details {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.synergy-combo-type {
+    background: var(--forge-accent);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    text-transform: capitalize;
+}
+
+.save-synergy-btn {
+    background: var(--forge-red);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8em;
+    margin-left: 10px;
+    transition: all 0.3s ease;
+}
+
+.save-synergy-btn:hover {
+    background: var(--forge-orange);
+}
+
+.save-synergy-btn:disabled {
+    background: #555;
+    cursor: default;
+}
+
+/* Synergy score colors */
+.very-high-synergy {
+    color: #ff4b2b !important;
+}
+
+.high-synergy {
+    color: #ff9d2f !important;
+}
+
+.medium-synergy {
+    color: #ffcd38 !important;
+}
+
+.low-synergy {
+    color: #7f8c8d !important;
+}

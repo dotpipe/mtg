@@ -1,0 +1,300 @@
+"Creature": [
+    {
+      "name": "Ancestor's Chosen",
+      "colors": [
+        "W"
+      ],
+      "color_identity": [
+        "W"
+      ],
+      "mana_cost": "{5}{W}{W}",
+      "cmc": 7.0,
+      "type_line": "Creature — Human Cleric",
+      "oracle_text": "First strike (This creature deals combat damage before creatures without first strike.)\nWhen this creature enters, you gain 1 life for each card in your graveyard.",
+      "power": "4",
+      "toughness": "4",
+      "loyalty": null,
+      "rarity": "uncommon",
+      "set": "10E",
+      "set_name": "Tenth Edition",
+      "collector_number": "1",
+      "image_uris": {
+        "small": "https://api.scryfall.com/cards/7a5cd03c-4227-4551-aa4b-7d119f0468b5?format=image&version=small",
+        "normal": "https://api.scryfall.com/cards/7a5cd03c-4227-4551-aa4b-7d119f0468b5?format=image&version=normal",
+        "large": "https://api.scryfall.com/cards/7a5cd03c-4227-4551-aa4b-7d119f0468b5?format=image&version=large"
+      },
+      "legalities": {
+        "commander": "Legal",
+        "duel": "Legal",
+        "legacy": "Legal",
+        "modern": "Legal",
+        "oathbreaker": "Legal",
+        "predh": "Legal",
+        "premodern": "Legal",
+        "vintage": "Legal"
+      }
+    },
+    {
+      "name": "Angel of Mercy",
+      "colors": [
+        "W"
+      ],
+      "color_identity": [
+        "W"
+      ],
+      "mana_cost": "{4}{W}",
+      "cmc": 5.0,
+      "type_line": "Creature — Angel",
+      "oracle_text": "Flying\nWhen this creature enters, you gain 3 life.",
+      "power": "3",
+      "toughness": "3",
+      "loyalty": null,
+      "rarity": "uncommon",
+      "set": "10E",
+      "set_name": "Tenth Edition",
+      "collector_number": "2",
+      "image_uris": {
+        "small": "https://api.scryfall.com/cards/8f7980d4-da43-4d6d-ad16-14b8a34ae91d?format=image&version=small",
+        "normal": "https://api.scryfall.com/cards/8f7980d4-da43-4d6d-ad16-14b8a34ae91d?format=image&version=normal",
+        "large": "https://api.scryfall.com/cards/8f7980d4-da43-4d6d-ad16-14b8a34ae91d?format=image&version=large"
+      },
+      "legalities": {
+        "brawl": "Legal",
+        "commander": "Legal",
+        "duel": "Legal",
+        "gladiator": "Legal",
+        "historic": "Legal",
+        "legacy": "Legal",
+        "modern": "Legal",
+        "oathbreaker": "Legal",
+        "pauper": "Legal",
+        "paupercommander": "Legal",
+        "penny": "Legal",
+        "predh": "Legal",
+        "premodern": "Legal",
+        "timeless": "Legal",
+        "vintage": "Legal"
+      }
+    },
+    {
+      "name": "Angelic Wall",
+      "colors": [
+        "W"
+      ],
+      "color_identity": [
+        "W"
+      ],
+      "mana_cost": "{1}{W}",
+      "cmc": 2.0,
+      "type_line": "Creature — Wall",
+      "oracle_text": "Defender (This creature can't attack.)\nFlying",
+      "power": "0",
+      "toughness": "4",
+      "loyalty": null,
+      "rarity": "common",
+      "set": "10E",
+      "set_name": "Tenth Edition",
+      "collector_number": "5",
+      "image_uris": {
+        "small": "https://api.scryfall.com/cards/6fa1f42f-1729-46ea-99c6-015d66c627d4?format=image&version=small",
+        "normal": "https://api.scryfall.com/cards/6fa1f42f-1729-46ea-99c6-015d66c627d4?format=image&version=normal",
+        "large": "https://api.scryfall.com/cards/6fa1f42f-1729-46ea-99c6-015d66c627d4?format=image&version=large"
+      },
+      "legalities": {
+        "commander": "Legal",
+        "duel": "Legal",
+        "legacy": "Legal",
+        "modern": "Legal",
+        "oathbreaker": "Legal",
+        "pauper": "Legal",
+        "paupercommander": "Legal",
+        "penny": "Legal",
+        "pioneer": "Legal",
+        "predh": "Legal",
+        "premodern": "Legal",
+        "vintage": "Legal"
+      }
+    },
+    {
+      "name": "Aven Cloudchaser",
+      "colors": [
+        "W"
+      ],
+      "color_identity": [
+        "W"
+      ],
+      "mana_cost": "{3}{W}",
+      "cmc": 4.0,
+      "type_line": "Creature — Bird Soldier",
+      "oracle_text": "Flying (This creature can't be blocked except by creatures with flying or reach.)\nWhen this creature enters, destroy target enchantment.",
+      "power": "2",
+      "toughness": "2",
+      "loyalty": null,
+      "rarity": "common",
+      "set": "10E",
+      "set_name": "Tenth Edition",
+      "collector_number": "7",
+      "image_uris": {
+        "small": "https://api.scryfall.com/cards/407110e9-19af-4ff5-97b2-c03225031a73?format=image&version=small",
+        "normal": "https://api.scryfall.com/cards/407110e9-19af-4ff5-97b2-c03225031a73?format=image&version=normal",
+        "large": "https://api.scryfall.com/cards/407110e9-19af-4ff5-97b2-c03225031a73?format=image&version=large"
+      },
+      "legalities": {
+        "commander": "Legal",
+        "duel": "Legal",
+        "legacy": "Legal",
+        "modern": "Legal",
+        "oathbreaker": "Legal",
+        "pauper": "Legal",
+        "paupercommander": "Legal",
+        "penny": "Legal",
+        "predh": "Legal",
+        "premodern": "Legal",
+        "vintage": "Legal"
+      }
+    },
+    {
+      "name": "Ballista Squad",
+      "colors": [
+        "W"
+      ],
+      "color_identity": [
+        "W"
+      ],
+      "mana_cost": "{3}{W}",
+      "cmc": 4.0,
+      "type_line": "Creature — Human Rebel",
+      "oracle_text": "{X}{W}, {T}: This creature deals X damage to target attacking or blocking creature.",
+      "power": "2",
+      "toughness": "2",
+      "loyalty": null,
+      "rarity": "uncommon",
+      "set": "10E",
+      "set_name": "Tenth Edition",
+      "collector_number": "8",
+      "image_uris": {
+        "small": "https://api.scryfall.com/cards/a4d17394-b9c4-43f6-9a6d-2c7c7ecb1d74?format=image&version=small",
+        "normal": "https://api.scryfall.com/cards/a4d17394-b9c4-43f6-9a6d-2c7c7ecb1d74?format=image&version=normal",
+        "large": "https://api.scryfall.com/cards/a4d17394-b9c4-43f6-9a6d-2c7c7ecb1d74?format=image&version=large"
+      },
+      "legalities": {
+        "commander": "Legal",
+        "duel": "Legal",
+        "legacy": "Legal",
+        "modern": "Legal",
+        "oathbreaker": "Legal",
+        "penny": "Legal",
+        "predh": "Legal",
+        "premodern": "Legal",
+        "vintage": "Legal"
+      }
+    },
+    {
+      "name": "Benalish Knight",
+      "colors": [
+        "W"
+      ],
+      "color_identity": [
+        "W"
+      ],
+      "mana_cost": "{2}{W}",
+      "cmc": 3.0,
+      "type_line": "Creature — Human Knight",
+      "oracle_text": "Flash (You may cast this spell any time you could cast an instant.)\nFirst strike (This creature deals combat damage before creatures without first strike.)",
+      "power": "2",
+      "toughness": "2",
+      "loyalty": null,
+      "rarity": "common",
+      "set": "10E",
+      "set_name": "Tenth Edition",
+      "collector_number": "11",
+      "image_uris": {
+        "small": "https://api.scryfall.com/cards/d0ae60d0-20d3-452c-9953-e229567c06f5?format=image&version=small",
+        "normal": "https://api.scryfall.com/cards/d0ae60d0-20d3-452c-9953-e229567c06f5?format=image&version=normal",
+        "large": "https://api.scryfall.com/cards/d0ae60d0-20d3-452c-9953-e229567c06f5?format=image&version=large"
+      },
+      "legalities": {
+        "commander": "Legal",
+        "duel": "Legal",
+        "legacy": "Legal",
+        "modern": "Legal",
+        "oathbreaker": "Legal",
+        "pauper": "Legal",
+        "paupercommander": "Legal",
+        "penny": "Legal",
+        "predh": "Legal",
+        "premodern": "Legal",
+        "vintage": "Legal"
+      }
+    },
+    {
+      "name": "Cho-Manno, Revolutionary",
+      "colors": [
+        "W"
+      ],
+      "color_identity": [
+        "W"
+      ],
+      "mana_cost": "{2}{W}{W}",
+      "cmc": 4.0,
+      "type_line": "Legendary Creature — Human Rebel",
+      "oracle_text": "Prevent all damage that would be dealt to Cho-Manno.",
+      "power": "2",
+      "toughness": "2",
+      "loyalty": null,
+      "rarity": "rare",
+      "set": "10E",
+      "set_name": "Tenth Edition",
+      "collector_number": "12",
+      "image_uris": {
+        "small": "https://api.scryfall.com/cards/fe04dfe7-6376-4c12-9404-0e1ae0942917?format=image&version=small",
+        "normal": "https://api.scryfall.com/cards/fe04dfe7-6376-4c12-9404-0e1ae0942917?format=image&version=normal",
+        "large": "https://api.scryfall.com/cards/fe04dfe7-6376-4c12-9404-0e1ae0942917?format=image&version=large"
+      },
+      "legalities": {
+        "commander": "Legal",
+        "duel": "Legal",
+        "legacy": "Legal",
+        "modern": "Legal",
+        "oathbreaker": "Legal",
+        "penny": "Legal",
+        "predh": "Legal",
+        "premodern": "Legal",
+        "vintage": "Legal"
+      }
+    },
+    {
+      "name": "Field Marshal",
+      "colors": [
+        "W"
+      ],
+      "color_identity": [
+        "W"
+      ],
+      "mana_cost": "{1}{W}{W}",
+      "cmc": 3.0,
+      "type_line": "Creature — Human Soldier",
+      "oracle_text": "Other Soldier creatures get +1/+1 and have first strike. (They deal combat damage before creatures without first strike.)",
+      "power": "2",
+      "toughness": "2",
+      "loyalty": null,
+      "rarity": "rare",
+      "set": "10E",
+      "set_name": "Tenth Edition",
+      "collector_number": "15",
+      "image_uris": {
+        "small": "https://api.scryfall.com/cards/1e22d287-274e-4222-9ed7-3e609a84ac07?format=image&version=small",
+        "normal": "https://api.scryfall.com/cards/1e22d287-274e-4222-9ed7-3e609a84ac07?format=image&version=normal",
+        "large": "https://api.scryfall.com/cards/1e22d287-274e-4222-9ed7-3e609a84ac07?format=image&version=large"
+      },
+      "legalities": {
+        "commander": "Legal",
+        "duel": "Legal",
+        "legacy": "Legal",
+        "modern": "Legal",
+        "oathbreaker": "Legal",
+        "penny": "Legal",
+        "predh": "Legal",
+        "vintage": "Legal"
+      }
+    },
